@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Calculate diameter with NEATM.
+Calculate diameter with NEATM/FRM.
 """
 import numpy as np
 import pandas as pd
@@ -46,6 +46,9 @@ if __name__ == "__main__":
         "--all", action="store_true", default=False,
         help="Try to plot all resuls")
     parser.add_argument(
+        "--model", type=str, default="NEATM",
+        help="Model (NEATM or FRM)")
+    parser.add_argument(
         "--fiteta", action="store_true", default=False,
         help="Fit eta")
     parser.add_argument(
@@ -66,12 +69,33 @@ if __name__ == "__main__":
     outdir = args.outdir
     os.makedirs(outdir, exist_ok=True)
 
+    # Optimized for NEOMIR paper in 2025
     Gamma_values = [0, 50, 150, 300, 500, 1000]
-    
-    key_flux5 = "flux5"
-    key_flux8 = "flux8"
-    w5 = 5.0
-    w8 = 8.0
+    w5, key_flux5 = 5.0, "flux5"
+    w8, key_flux8 = 8.0, "flux8"
+    # NEATM 
+    # Assumption
+    H = 25
+    # geometric albedo
+    pv = 0.1 
+    # H=25 and pv=0.1 -> D=42
+    D_true = 42
+
+    # Model (NEATM or FRM)
+    model = args.model
+    if model == "NEATM":
+        if args.fiteta:
+            N_model = 0
+            etafit  = 1
+            print("Use NEATM fitting eta")
+        else:
+            N_model = 1
+            etafit  = 0
+            print("Use NEATM w/ fixed eta")
+    elif model == "FRM":
+        N_model = 3
+        etafit  = 0
+        print("Use FRM")
     
     if args.all:
         # Try to find object id
@@ -112,18 +136,9 @@ if __name__ == "__main__":
     # Calculate alpha, r, and delta
     df = calc_aspect(df)
 
-    # NEATM 
-    # Assumption
-    H = 25
-    # geometric albedo
-    pv = 0.1 
-    # H=25 and pv=0.1 -> D=42
-    D_true = 42
     eta = args.eta
     print("Parameters for NEATM")
     print(f"  H={H}, eta={eta}")
-    if args.fiteta:
-        print("Fit eta")
     D_NEATM_list = []
     eta_NEATM_list = []
     df = df.reset_index(drop=True)
@@ -131,9 +146,7 @@ if __name__ == "__main__":
     for idx, row in df.iterrows():
         if (idx%1000)==0:
             print(f"  {idx}/{len(df)}")
-        # TODO Check
         # Convert micronJy to Jy
-
         flux5 = row[key_flux5]*1e-6
         flux8 = row[key_flux8]*1e-6
         fluxerr5 = flux5*0.1
@@ -145,14 +158,9 @@ if __name__ == "__main__":
         alpha = row["alpha"]
         
         # Fit eta
-        if args.fiteta:
-            cmd = f'echo {H} 0.15 0.9 {eta} 0.1 {r} {delta} {alpha} {w5} {flux5} {fluxerr5} {w8} {flux8} {fluxerr8} | fittm -m 0 | grep "o>"'
-            cmd = f'echo {H} 0.15 0.9 {eta} 0.1 {r} {delta} {alpha} {w8} {flux8} {fluxerr8} {w5} {flux5} {fluxerr5} | fittm -m 0 | grep "o>"'
-            if alpha > 90
-                assert False, cmd
-        # Do not fit eta
-        else:
-            cmd = f'echo {H} 0.15 0.9 {eta} 0.1 {r} {delta} {alpha} {w8} {flux8} {fluxerr8} | fittm -m 1 | grep "o>"'
+        # TODO: {w5} {flux5} {fluxerr5} {w8} {flux8} {fluxerr8} and 
+        #       {w8} {flux8} {fluxerr8} {w5} {flux5} {fluxerr5} give different results?
+        cmd = f'echo {H} 0.15 0.9 {eta} 0.1 {r} {delta} {alpha} {w5} {flux5} {fluxerr5} {w8} {flux8} {fluxerr8} | fittm -m {N_model} | grep "o>"'
 
         p = subprocess.Popen(cmd, shell=True, preexec_fn=os.setsid, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
         comm = p.communicate()
@@ -165,11 +173,12 @@ if __name__ == "__main__":
 
     df["D_NEATM"] = D_NEATM_list
     df["D_true"] = D_true
-    df["eta_NEATM"] = eta_NEATM_list
+    df["model"] = args.model
+    df["eta"] = eta_NEATM_list
+    df["etafit"] = etafit
 
     # Save results in a new file
     out = args.out
     outdir = args.outdir
     out = os.path.join(outdir, out)
     df.to_csv(out, sep=" ")
-
