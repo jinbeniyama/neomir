@@ -119,7 +119,7 @@ if __name__ == "__main__":
         mark = "."
         si = 10
         if idx == 0:
-            lab = "Original asteroids"
+            lab = f"Original asteroids N={len(df1)}"
         else:
             lab = None
         ax.scatter(row["x"], row["y"], color=col, lw=1, ls="solid", label=lab, zorder=-1, s=si, marker=mark)
@@ -129,7 +129,7 @@ if __name__ == "__main__":
         mark = "x"
         si = 10
         if idx == 0:
-            lab = "Pseudo asteroids (Symmetric with respect to the NEOMIR)"
+            lab = f"Pseudo asteroids N={len(df2)}\n(Symmetric with respect to the NEOMIR)"
         else:
             lab = None
         ax.scatter(row["x"], row["y"], color=col, lw=1, ls="solid", label=lab, zorder=-1, s=si, marker=mark)
@@ -146,7 +146,7 @@ if __name__ == "__main__":
     # Sun
     ax.scatter(0, 0, marker="x", color="black", lw=1.5, s=200)
 
-    ax.legend(loc="lower left")
+    ax.legend(loc="lower left", fontsize=12)
     plt.savefig(out)
     plt.close()
 
