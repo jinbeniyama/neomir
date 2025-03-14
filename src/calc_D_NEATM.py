@@ -46,8 +46,8 @@ if __name__ == "__main__":
         "--all", action="store_true", default=False,
         help="Try to plot all resuls")
     parser.add_argument(
-        "--key_flux", type=str, default="flux8",
-        help="Key used to calculate diameter")
+        "--fiteta", action="store_true", default=False,
+        help="Fit eta")
     parser.add_argument(
         "--resdir", type=str, default="tpmresult",
         help="Directory with output files")
@@ -67,7 +67,11 @@ if __name__ == "__main__":
     os.makedirs(outdir, exist_ok=True)
 
     Gamma_values = [0, 50, 150, 300, 500, 1000]
-    key_flux = args.key_flux
+    
+    key_flux5 = "flux5"
+    key_flux8 = "flux8"
+    w5 = 5.0
+    w8 = 8.0
     
     if args.all:
         # Try to find object id
@@ -118,17 +122,11 @@ if __name__ == "__main__":
     eta = args.eta
     print("Parameters for NEATM")
     print(f"  H={H}, eta={eta}")
+    if args.fiteta:
+        print("Fit eta")
     D_NEATM_list = []
+    eta_NEATM_list = []
     df = df.reset_index(drop=True)
-
-    if args.key_flux == "flux8":
-        w = 8.0
-        key_flux = "flux8"
-    elif args.keu_flux == "flux5":
-        w = 5.0
-        key_flux = "flux5"
-    else:
-        assert False, "Not implemented."
 
     for idx, row in df.iterrows():
         if (idx%1000)==0:
@@ -136,24 +134,38 @@ if __name__ == "__main__":
         # TODO Check
         # Convert micronJy to Jy
 
-        flux = row[key_flux]*1e-6
-        fluxerr = flux*0.1
+        flux5 = row[key_flux5]*1e-6
+        flux8 = row[key_flux8]*1e-6
+        fluxerr5 = flux5*0.1
+        fluxerr8 = flux8*0.1
         lon   = row["lon"]
         lat   = row["lat"]
         r     = row["r"]
         delta = row["delta"]
         alpha = row["alpha"]
-        cmd = f'echo {H} 0.15 0.9 {eta} 0.1 {r} {delta} {alpha} {w} {flux} {fluxerr} | fittm -m 1 | grep "o>"'
+        
+        # Fit eta
+        if args.fiteta:
+            cmd = f'echo {H} 0.15 0.9 {eta} 0.1 {r} {delta} {alpha} {w5} {flux5} {fluxerr5} {w8} {flux8} {fluxerr8} | fittm -m 0 | grep "o>"'
+            cmd = f'echo {H} 0.15 0.9 {eta} 0.1 {r} {delta} {alpha} {w8} {flux8} {fluxerr8} {w5} {flux5} {fluxerr5} | fittm -m 0 | grep "o>"'
+            if alpha > 90
+                assert False, cmd
+        # Do not fit eta
+        else:
+            cmd = f'echo {H} 0.15 0.9 {eta} 0.1 {r} {delta} {alpha} {w8} {flux8} {fluxerr8} | fittm -m 1 | grep "o>"'
 
         p = subprocess.Popen(cmd, shell=True, preexec_fn=os.setsid, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
         comm = p.communicate()
-        D_NEATM = float(comm[0].decode('ascii').split()[1])
+        res = comm[0].decode("ascii").split()
+        D_NEATM = float(res[1])
+        eta_NEATM = float(res[5])
         # Diameter in m
         D_NEATM_list.append(D_NEATM*1e3)
-
+        eta_NEATM_list.append(eta_NEATM)
 
     df["D_NEATM"] = D_NEATM_list
     df["D_true"] = D_true
+    df["eta_NEATM"] = eta_NEATM_list
 
     # Save results in a new file
     out = args.out
