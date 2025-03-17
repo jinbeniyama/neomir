@@ -167,6 +167,7 @@ if __name__ == "__main__":
         # Use only 8 micron
         else:
             cmd = f'echo {H} 0.15 0.9 {eta} 0.1 {r} {delta} {alpha} {w8} {flux8} {fluxerr8} | fittm -m {N_model} | grep "o>"'
+
         
         p = subprocess.Popen(cmd, shell=True, preexec_fn=os.setsid, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
         comm = p.communicate()
