@@ -6,6 +6,19 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import os
 
+mycolor = [
+    "#AD002D",
+    "#1e50a2",
+    "#69821b",
+    "#f055f0",
+    "#afafb0",
+    "#0095b9",
+    "#89c3eb",
+    "#ec6800",
+    "cyan",
+    "gold",
+    "magenta"
+    ]
 
 def calc_aspect(df):
     """
@@ -40,32 +53,24 @@ if __name__ == "__main__":
         "--idx_obj", type=int, nargs="*", default=[1],
         help="Index of objects to be plotted")
     parser.add_argument(
-        "--all", action="store_true", default=False,
-        help="Try to plot all resuls")
+        "--resdir1", type=str, default="tpmresult",
+        help="Directory with output files")
     parser.add_argument(
-        "--resdir", type=str, default="tpmresult",
+        "--resdir2", type=str, default="tpmresult_pseudo",
         help="Directory with output files")
     parser.add_argument(
         "--outdir", type=str, default="plot",
         help="Directory for output file")
     args = parser.parse_args()
 
-    resdir = args.resdir
+    resdir1 = args.resdir1
+    resdir2 = args.resdir2
     outdir = args.outdir
     os.makedirs(outdir, exist_ok=True)
 
     Gamma_values = [0, 50, 150, 300, 500, 1000]
     key_flux = "flux8"
     
-    if args.all:
-        # Try to find object id
-        filenames = [f.name for f in os.scandir(resdir)]
-        # Extract object id from TI150_res_012.txta
-        filenames_part = [f.split("_")[-1] for f in filenames]
-        idx_plot = [int(f.split(".")[0]) for f in filenames_part]
-        idx_plot = list(set(idx_plot))
-    else:
-        idx_plot = args.idx_obj
 
 
     out1 = f"tpmres_NEOMIR_stat_TI.jpg"
@@ -75,31 +80,59 @@ if __name__ == "__main__":
     out3 = f"tpmres_NEOMIR_stat_geometryflux.jpg"
     out3 = os.path.join(outdir, out3)
     
-    # Read lam, beta, flux, TI, objid
-    df_list = []
-    for idx_obj in idx_plot:
-        print(f"READ results of OBJ{idx_obj:03d}")
-        
-        # Loop over each Gamma value to load data and generate a plot
-        for idx, Gamma in enumerate(Gamma_values):
-            filename = f"TI{Gamma}_res_{idx_obj:03d}.txt"  # Load the corresponding Gamma file
-            filename = os.path.join(resdir, filename)
-            data = np.loadtxt(filename)
 
-            # Extract columns: lon, lat, flux5, flux8,  x1, y1, z1, x2, y2, z2
-            lon, lat, flux5, flux8 = data[:, 1], data[:, 2], data[:, 3], data[:, 4]
-            x1, y1, z1     = data[:, 5], data[:, 6], data[:, 7]
-            x2, y2, z2     = data[:, 8], data[:, 9], data[:, 10]
+    # Original objects ========================================================
+    filenames1 = [f.name for f in os.scandir(resdir1)]
+    df1_list = []
+    for idx_obj, fi in enumerate(filenames1):
+        filename = os.path.join(resdir1, fi)
+        # Extract TI from TI300_res_141.txt
+        TI = int(fi.split("_")[0][2:])
+        data = np.loadtxt(filename)
 
-            df = pd.DataFrame(dict(
-                lon=lon, lat=lat, flux5=flux5, flux8=flux8,
-                X=x1, Y=y1, Z=z1, MirX=x2, MirY=y2, MirZ=z2
-                ))
-            df["TI"] = Gamma
-            df["objid"] = idx_obj
+        # Extract columns: lon, lat, flux5, flux8,  x1, y1, z1, x2, y2, z2
+        lon, lat, flux5, flux8 = data[:, 1], data[:, 2], data[:, 3], data[:, 4]
+        x1, y1, z1     = data[:, 5], data[:, 6], data[:, 7]
+        x2, y2, z2     = data[:, 8], data[:, 9], data[:, 10]
 
-            df_list.append(df)
-    df = pd.concat(df_list)
+        df = pd.DataFrame(dict(
+            lon=lon, lat=lat, flux5=flux5, flux8=flux8,
+            X=x1, Y=y1, Z=z1, MirX=x2, MirY=y2, MirZ=z2
+            ))
+        df["TI"] = TI
+        df["objid"] = idx_obj
+
+        df1_list.append(df)
+    df1 = pd.concat(df1_list)
+    # Original objects ========================================================
+
+    # Pseudo objects ==========================================================
+    filenames2 = [f.name for f in os.scandir(resdir2)]
+    df2_list = []
+    for idx_obj, fi in enumerate(filenames2):
+        filename = os.path.join(resdir2, fi)
+        # Extract TI from TI300_res_141.txt
+        TI = int(fi.split("_")[0][2:])
+        data = np.loadtxt(filename)
+
+        # Extract columns: lon, lat, flux5, flux8,  x1, y1, z1, x2, y2, z2
+        lon, lat, flux5, flux8 = data[:, 1], data[:, 2], data[:, 3], data[:, 4]
+        x1, y1, z1     = data[:, 5], data[:, 6], data[:, 7]
+        x2, y2, z2     = data[:, 8], data[:, 9], data[:, 10]
+
+        df = pd.DataFrame(dict(
+            lon=lon, lat=lat, flux5=flux5, flux8=flux8,
+            X=x1, Y=y1, Z=z1, MirX=x2, MirY=y2, MirZ=z2
+            ))
+        df["TI"] = TI
+        df["objid"] = idx_obj
+
+        df2_list.append(df)
+    df2 = pd.concat(df2_list)
+    # Original objects ========================================================
+
+    df = pd.concat([df1, df2])
+
     # Prograde
     df_pro = df[df["lat"] >= 0]
     df_ret = df[df["lat"] < 0]
@@ -250,7 +283,7 @@ if __name__ == "__main__":
     plt.close()
     # Plot r, delta, alpha dependence =========================================
 
-
+    
     # Plot r, delta, alpha vs. flux (TI dependence) ===========================
     fig = plt.figure(figsize=(16, 16))
     ax_a = fig.add_axes([0.10, 0.55, 0.25, 0.3])
