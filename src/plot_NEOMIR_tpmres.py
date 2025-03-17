@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+"""
+Plot 8 micron flux!
+"""
 from argparse import ArgumentParser as ap
 import numpy as np
 import matplotlib.pyplot as plt
@@ -18,6 +21,9 @@ if __name__ == "__main__":
     parser.add_argument(
         "--resdir", type=str, default="tpmresult",
         help="Directory with output files")
+    parser.add_argument(
+        "--out", type=str, default=None,
+        help="Output filename (only for N(idx_obj)==1)")
     parser.add_argument(
         "--outdir", type=str, default="plot",
         help="Directory for output file")
@@ -43,7 +49,10 @@ if __name__ == "__main__":
     for idx_obj in idx_plot:
         print(f"Make a figure for OBJ{idx_obj:03d}")
         
-        out = f"tpmres_NEOMIR_obj{idx_obj:03d}.jpg"
+        if args.out:
+            out = args.out
+        else:
+            out = f"tpmres_NEOMIR_obj{idx_obj:03d}.jpg"
         out = os.path.join(outdir, out)
 
 
@@ -75,10 +84,10 @@ if __name__ == "__main__":
             data = np.loadtxt(filename)
         
             # Extract columns: lon, lat, flux
-            lon, lat, flux = data[:, 1], data[:, 2], data[:, 3]
+            lon, lat, flux5, flux8 = data[:, 1], data[:, 2], data[:, 3], data[:, 4]
             # These are common
-            x1, y1, z1     = data[:, 4][0], data[:, 5][0], data[:, 6][0]
-            x2, y2, z2     = data[:, 7][0], data[:, 8][0], data[:, 9][0]
+            x1, y1, z1     = data[:, 5][0], data[:, 6][0], data[:, 7][0]
+            x2, y2, z2     = data[:, 8][0], data[:, 9][0], data[:, 10][0]
 
             # Calculate alpha, r, delta
             S = np.array([x1, y1, z1]).T
@@ -89,14 +98,14 @@ if __name__ == "__main__":
             alpha = np.arccos(np.sum(SO)/r/delta)*180/np.pi
             print(f"  r, delta, alpha = {r:.2f}, {delta:.2f}, {alpha:.2f}")
 
-            print(f"Gamma {Gamma}: min={np.min(flux)}, max={np.max(flux)}, median={np.median(flux)}, std={np.std(flux)}")
+            print(f"Gamma {Gamma}: min={np.min(flux8)}, max={np.max(flux8)}, median={np.median(flux8)}, std={np.std(flux8)}")
             
                     
             info = f"(r, delta, alpha) = ({r:.2f} au, {delta:.2f} au, {alpha:.2f} deg)"
             ax1.text(0.5, 1.2, info, size=22, transform=ax1.transAxes)
         
             # Interpolate scattered data to grid
-            flux_grid = griddata((lon, lat), flux, (lon_mesh, lat_mesh), method='cubic')
+            flux_grid = griddata((lon, lat), flux8, (lon_mesh, lat_mesh), method='cubic')
         
             # Plot in the correct subplot (3x2 grid)
             ax = axs[idx] 
@@ -116,7 +125,7 @@ if __name__ == "__main__":
             ax.set_ylim([-90, 90])
             ax.set_title(f"Gamma = {Gamma} tiu")
             if (Gamma>0):
-                allFluxes.extend(flux)
+                allFluxes.extend(flux8)
         
         
         allFluxes=np.sort(allFluxes)
