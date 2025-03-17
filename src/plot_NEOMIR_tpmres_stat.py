@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 from argparse import ArgumentParser as ap
 import numpy as np
@@ -103,6 +103,23 @@ if __name__ == "__main__":
     # Prograde
     df_pro = df[df["lat"] >= 0]
     df_ret = df[df["lat"] < 0]
+    
+    f5_min = np.min(df["flux5"])
+    f5_max = np.max(df["flux5"])
+    f8_min = np.min(df["flux8"])
+    f8_max = np.max(df["flux8"])
+    df5_min = df[df["flux5"] == f5_min]
+    df5_max = df[df["flux5"] == f5_max]
+    df8_min = df[df["flux8"] == f8_min]
+    df8_max = df[df["flux8"] == f8_max]
+    print("Minimum 5 micron flux:")
+    print(df5_min)
+    print("Minimum 8 micron flux:")
+    print(df8_min)
+    print("Maximum 5 micron flux:")
+    print(df5_max)
+    print("Maximum 8 micron flux:")
+    print(df8_max)
 
 
     # Plot Pro/retrograde, TI,  ===============================================
