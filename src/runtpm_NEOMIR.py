@@ -7,18 +7,20 @@ from concurrent.futures import ProcessPoolExecutor
 from multiprocessing import Manager
 
 
-def run_simulation(i, Gamma, obs, eph, obj, spindir, label):
+def run_simulation(i, rotP_hr, Gamma, obs, eph, obj, spindir, label):
     np.random.seed(os.getpid())
 
     # Generate random values for lam, beta
     lam = np.random.uniform(0, 360, 1)[0]
     beta = np.random.uniform(-90, 90, 1)[0]
-    P = 0.0968
     spinf = f"spin{i:03d}_TI{Gamma}_{label}.txt"
     with open(f'{spindir}/{spinf}', 'wt') as f:
-        print(lam, beta, P, 0, 0, file=f)
-
-    cmd = f'echo {obj} {eph} 0.9 {Gamma} 0.039 0 0 | runtpm -o {obs} -S {spindir}/{spinf} -s 0.042 | grep "f>"'
+        print(lam, beta, rotP_hr, 0, 0, file=f)
+    
+    # emissivity
+    eps = 0.9
+    D_km = 1.0
+    cmd = f'echo {obj} {eph} {eps} {Gamma} 0.039 0 0 | runtpm -o {obs} -S {spindir}/{spinf} -s {D_km} | grep "f>"'
     p = subprocess.Popen(cmd, shell=True, preexec_fn=os.setsid, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
     comm = p.communicate()
     output = comm[0].decode('ascii').strip()
@@ -30,7 +32,7 @@ def run_simulation(i, Gamma, obs, eph, obj, spindir, label):
     if len(split_output) <= 7:
         raise IndexError(f"Unexpected command output: {output}")
     
-    # Fluxes
+    # Fluxes in microJy
     flux_5 = float(split_output[7]) * 1e6
     flux_8 = float(split_output[17]) * 1e6
     # Extract locations of asteroids from obsfile
@@ -41,11 +43,11 @@ def run_simulation(i, Gamma, obs, eph, obj, spindir, label):
         xyz2 = lines[4]
         x2, y2, z2 = xyz2.split()
 
-    log_entry = f"{i} {lam} {beta} {flux_5} {flux_8} {x1} {y1} {z1} {x2} {y2} {z2}\n"
+    log_entry = f"{i} {D_km} {lam} {beta} {flux_5} {flux_8} {x1} {y1} {z1} {x2} {y2} {z2}\n"
     return log_entry  # Return the formatted log entry
 
 
-def main_tpm(obs, eph, obj, N, M, Gamma_values, label, spindir, outdir):
+def main_tpm(obs, eph, obj, N, M, rotP_hr, Gamma_values, label, spindir, outdir):
     # Initialize manager for shared list
     with Manager() as manager:
         for Gamma in Gamma_values:  # Iterate over each Gamma value
@@ -55,7 +57,7 @@ def main_tpm(obs, eph, obj, N, M, Gamma_values, label, spindir, outdir):
             
             for cycle in range(M):
                 with ProcessPoolExecutor(max_workers=N) as executor:
-                    futures = [executor.submit(run_simulation, i, Gamma, obs, eph, obj, spindir, label) for i in range(N)]
+                    futures = [executor.submit(run_simulation, i, rotP_hr, Gamma, obs, eph, obj, spindir, label) for i in range(N)]
                     cycle_results = [f.result() for f in futures]
                     results.extend(cycle_results)  # Append the results for this cycle
 
@@ -80,6 +82,9 @@ if __name__ == "__main__":
         "--gamma", type=int, nargs="*", default=[0, 50, 150, 300, 500, 1000],
         help="Thermal inertia")
     parser.add_argument(
+        "--rotP_hr", type=float, default=0.0968,
+        help="Rotation period in hour")
+    parser.add_argument(
         "--spindir", type=str, default="spinfile",
         help="Directory for output file")
     parser.add_argument(
@@ -101,4 +106,4 @@ if __name__ == "__main__":
     for n in range(N_obs):
         obs, eph = args.obs[n], args.eph[n]
         label = f"{n+1:03d}"
-        main_tpm(obs, eph, args.obj, N, M, args.gamma, label, spindir, outdir)
+        main_tpm(obs, eph, args.obj, N, M, args.rotP_hr, args.gamma, label, spindir, outdir)
