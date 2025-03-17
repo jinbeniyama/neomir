@@ -22,6 +22,15 @@ if __name__ == "__main__":
         "--resdir", type=str, default="tpmresult",
         help="Directory with output files")
     parser.add_argument(
+        "--vmin", type=float, default=20.0,
+        help="Minimum value")
+    parser.add_argument(
+        "--vmax", type=float, default=400.0,
+        help="Maximum value")
+    parser.add_argument(
+        "--cmap", type=str, default="inferno",
+        help="Color map")
+    parser.add_argument(
         "--out", type=str, default=None,
         help="Output filename (only for N(idx_obj)==1)")
     parser.add_argument(
@@ -34,6 +43,8 @@ if __name__ == "__main__":
     os.makedirs(outdir, exist_ok=True)
 
     Gamma_values = [0, 50, 150, 300, 500, 1000]
+    vmin, vmax = args.vmin, args.vmax
+    cmap = args.cmap
     
     if args.all:
         # Try to find object id
@@ -109,7 +120,7 @@ if __name__ == "__main__":
         
             # Plot in the correct subplot (3x2 grid)
             ax = axs[idx] 
-            c = ax.contourf(lon_mesh, lat_mesh, flux_grid, levels=50, cmap='viridis', vmin=20, vmax=400)
+            c = ax.contourf(lon_mesh, lat_mesh, flux_grid, levels=50, cmap=cmap, vmin=vmin, vmax=vmax)
             fig.colorbar(c, ax=ax, label='Flux (microJy)')
         
             # Add contour lines
@@ -127,8 +138,8 @@ if __name__ == "__main__":
             if (Gamma>0):
                 allFluxes.extend(flux8)
         
-        
-        allFluxes=np.sort(allFluxes)
-        plt.plot(allFluxes, np.arange(1,len(allFluxes)+1)/len(allFluxes))
+        # Useless?
+        #allFluxes = np.sort(allFluxes)
+        #plt.plot(allFluxes, np.arange(1,len(allFluxes)+1)/len(allFluxes))
         plt.savefig(out)
         plt.close()
