@@ -52,19 +52,25 @@ if __name__ == "__main__":
         df_list.append(df)
 
     df = pd.concat(df_list)
+
+    model = list(set(df["model"]))[0]
+
     # Diameter ratio
     df["Dr"] = df["D_NEATM"]/df["D_true"]
 
     # Plot
     fig = plt.figure(figsize=(16, 4))
-    ax_a = fig.add_axes([0.10, 0.20, 0.25, 0.7])
-    ax_r = fig.add_axes([0.40, 0.20, 0.25, 0.7])
-    ax_d = fig.add_axes([0.70, 0.20, 0.25, 0.7])
+    ax_a = fig.add_axes([0.05, 0.20, 0.18, 0.7])
+    ax_r = fig.add_axes([0.29, 0.20, 0.18, 0.7])
+    ax_d = fig.add_axes([0.53, 0.20, 0.18, 0.7])
+    ax_e = fig.add_axes([0.77, 0.20, 0.18, 0.7])
 
-    ax_a.set_xlabel("Phase angle [deg]")
-    ax_r.set_xlabel("Heliocentric distance [au]")
-    ax_d.set_xlabel("NEOMIR-centric distance [au]")
-    ax_a.set_ylabel(r"$D_{NEATM}/D_{true}$")
+    ax_a.set_xlabel("Phase angle [deg]", fontsize=12)
+    ax_r.set_xlabel("Heliocentric distance [au]", fontsize=12)
+    ax_d.set_xlabel("NEOMIR-centric distance [au]", fontsize=12)
+    ax_a.set_ylabel(r"$D_{" + model + r"}/D_{true}$", fontsize=12)
+    ax_e.set_xlabel("Beaming parameter", fontsize=12)
+    ax_e.set_ylabel("N", fontsize=12)
 
     for idx_TI, TI in enumerate(Gamma_values):
         df_TI = df[df["TI"] == TI]
@@ -77,9 +83,10 @@ if __name__ == "__main__":
             df_TI["r"], df_TI["Dr"], label=f"{TI} tiu", color=mycolor[idx_TI], s=5, marker="o", fc="None", zorder=zorder)
         ax_d.scatter(
             df_TI["delta"], df_TI["Dr"], label=f"{TI} tiu", color=mycolor[idx_TI], s=5, marker="o", fc="None", zorder=zorder)
+        ax_e.hist(df_TI["eta"], histtype="step", color=mycolor[idx_TI])
 
     yticks = np.arange(0, 7, 1.0)
-    for ax in fig.axes:
+    for ax in [ax_a, ax_r, ax_d]:
         ax.legend()
         ax.yaxis.set_major_locator(ticker.FixedLocator(yticks))
         if args.ymax:
