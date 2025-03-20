@@ -10,6 +10,46 @@ import subprocess, os
 from argparse import ArgumentParser as ap
 
 
+def read_tpmres_neomir(resdir, idx_plot, Gamma_valuea):
+    """
+
+    Parameters
+    ----------
+    resdir : str
+        directory with tpm results
+    idx_plot : array-like   
+        index of objects to be analyzed
+    Gamma_values : array-like
+        thermal inertia
+    """
+    # Read lam, beta, flux, TI, objid
+    df_list = []
+    for idx_obj in idx_plot:
+        print(f"READ results of OBJ{idx_obj:03d}")
+        
+        # Loop over each Gamma value to load data and generate a plot
+        for idx, Gamma in enumerate(Gamma_values):
+            filename = f"TI{Gamma}_res_{idx_obj:03d}.txt"  # Load the corresponding Gamma file
+            filename = os.path.join(resdir, filename)
+            data = np.loadtxt(filename)
+
+            # Extract columns: lon, lat, flux5, flux8,  x1, y1, z1, x2, y2, z2
+            D, lon, lat  = data[:, 1], data[:, 2], data[:, 3], 
+            flux5, flux8 = data[:, 4], data[:, 5]
+            x1, y1, z1   = data[:, 6], data[:, 7], data[:, 8]
+            x2, y2, z2   = data[:, 9], data[:, 10], data[:, 11]
+
+            df = pd.DataFrame(dict(
+                D=D, lon=lon, lat=lat, flux5=flux5, flux8=flux8,
+                X=x1, Y=y1, Z=z1, MirX=x2, MirY=y2, MirZ=z2
+                ))
+            df["TI"] = Gamma
+            df["objid"] = idx_obj
+
+            df_list.append(df)
+    df = pd.concat(df_list)
+    return df
+
 def calc_aspect(df):
     """
     Calculate alpha, delta, and r.
@@ -73,13 +113,15 @@ if __name__ == "__main__":
     Gamma_values = [0, 50, 150, 300, 500, 1000]
     w5, key_flux5 = 5.0, "flux5"
     w8, key_flux8 = 8.0, "flux8"
-    # NEATM 
-    # Assumption
-    H = 25
-    # geometric albedo
+
+    # To calculate NEATM flux, we need D,
+    # but H and pv are neccesary as inputs
+    # in km
+    D_true = 1
+    # geometric albedo (assumed)
     pv = 0.1 
-    # H=25 and pv=0.1 -> D=42
-    D_true = 42
+    # D=1 and pv=0.1 -> H=18.118
+    H = 18.118
 
     # Model (NEATM or FRM)
     model = args.model
@@ -106,32 +148,10 @@ if __name__ == "__main__":
         idx_plot = list(set(idx_plot))
     else:
         idx_plot = args.idx_obj
+    
+    df = read_tpmres_neomir(resdir, idx_plot, Gamma_values)
 
-    # Read lam, beta, flux, TI, objid
-    df_list = []
-    for idx_obj in idx_plot:
-        print(f"READ results of OBJ{idx_obj:03d}")
-        
-        # Loop over each Gamma value to load data and generate a plot
-        for idx, Gamma in enumerate(Gamma_values):
-            filename = f"TI{Gamma}_res_{idx_obj:03d}.txt"  # Load the corresponding Gamma file
-            filename = os.path.join(resdir, filename)
-            data = np.loadtxt(filename)
 
-            # Extract columns: lon, lat, flux5, flux8,  x1, y1, z1, x2, y2, z2
-            lon, lat, flux5, flux8 = data[:, 1], data[:, 2], data[:, 3], data[:, 4]
-            x1, y1, z1     = data[:, 5], data[:, 6], data[:, 7]
-            x2, y2, z2     = data[:, 8], data[:, 9], data[:, 10]
-
-            df = pd.DataFrame(dict(
-                lon=lon, lat=lat, flux5=flux5, flux8=flux8,
-                X=x1, Y=y1, Z=z1, MirX=x2, MirY=y2, MirZ=z2
-                ))
-            df["TI"] = Gamma
-            df["objid"] = idx_obj
-
-            df_list.append(df)
-    df = pd.concat(df_list)
 
     # Calculate alpha, r, and delta
     df = calc_aspect(df)
@@ -174,8 +194,8 @@ if __name__ == "__main__":
         res = comm[0].decode("ascii").split()
         D_NEATM = float(res[1])
         eta_NEATM = float(res[5])
-        # Diameter in m
-        D_NEATM_list.append(D_NEATM*1e3)
+        # Diameter in km
+        D_NEATM_list.append(D_NEATM)
         eta_NEATM_list.append(eta_NEATM)
 
     df["D_NEATM"] = D_NEATM_list
