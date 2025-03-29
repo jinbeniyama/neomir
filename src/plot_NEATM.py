@@ -74,20 +74,23 @@ if __name__ == "__main__":
 
     for idx_TI, TI in enumerate(Gamma_values):
         df_TI = df[df["TI"] == TI]
+        df_negative_D = df_TI[df_TI["Dr"] < 0] 
+        Nall = len(df_TI)
+        Nn = len(df_negative_D)
         zorder = 100 - idx_TI
         shift = idx_TI*1
-
+        label=f"{TI} tiu (N={Nall}, Nnegative={Nn})"
         ax_a.scatter(
-            df_TI["alpha"]+shift, df_TI["Dr"], label=f"{TI} tiu", color=mycolor[idx_TI], s=5, marker="o", fc="None", zorder=zorder)
+            df_TI["alpha"]+shift, df_TI["Dr"], label=label, color=mycolor[idx_TI], s=5, marker="o", fc="None", zorder=zorder)
         ax_r.scatter(
-            df_TI["r"], df_TI["Dr"], label=f"{TI} tiu", color=mycolor[idx_TI], s=5, marker="o", fc="None", zorder=zorder)
+            df_TI["r"], df_TI["Dr"], label=label, color=mycolor[idx_TI], s=5, marker="o", fc="None", zorder=zorder)
         ax_d.scatter(
-            df_TI["delta"], df_TI["Dr"], label=f"{TI} tiu", color=mycolor[idx_TI], s=5, marker="o", fc="None", zorder=zorder)
+            df_TI["delta"], df_TI["Dr"], label=label, color=mycolor[idx_TI], s=5, marker="o", fc="None", zorder=zorder)
         ax_e.hist(df_TI["eta"], histtype="step", color=mycolor[idx_TI])
 
     yticks = np.arange(0, 7, 1.0)
     for ax in [ax_a, ax_r, ax_d]:
-        ax.legend()
+        ax.legend(fontsize=8)
         ax.yaxis.set_major_locator(ticker.FixedLocator(yticks))
         if args.ymax:
             ax.set_ylim([0, args.ymax])
