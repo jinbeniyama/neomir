@@ -86,7 +86,7 @@ if __name__ == "__main__":
     # Original objects ========================================================
 
 
-    # Pseudo objects ==========================================================
+    # Control objects =========================================================
     filenames2 = [f.name for f in os.scandir(obsdir2)]
     df2_list = []
     for idx_fi, fi in enumerate(filenames2):
@@ -109,7 +109,7 @@ if __name__ == "__main__":
             df2_list.append(df)
     df2 = pd.concat(df2_list)
     df2 = df2.reset_index(drop=True)
-    # Pseudo objects ==========================================================
+    # Control objects =========================================================
 
     # Calculate alpha, r, and delta
     df1 = calc_aspect(df1)
@@ -136,7 +136,7 @@ if __name__ == "__main__":
     ax_r.set_ylabel("N")
     ax_d.set_ylabel("N")
 
-    lab_ori, lab_pse = f"Original asteroids N={len(df1)}", f"Pseudo asteroids N={len(df2)}"
+    lab_ori, lab_pse = f"Original asteroids N={len(df1)}", f"Control asteroids N={len(df2)}"
     col_ori, col_pse = "red", "blue"
     ls_ori, ls_pse = "solid", "dashed"
     
