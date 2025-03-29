@@ -4,11 +4,9 @@
 Check r, delta, and alpha.
 And plot objects and Earth.
 """
-import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import subprocess, os
-from scipy.interpolate import griddata
 from argparse import ArgumentParser as ap
 from astroquery.jplhorizons import Horizons
 
