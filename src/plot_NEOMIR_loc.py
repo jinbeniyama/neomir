@@ -61,7 +61,7 @@ if __name__ == "__main__":
     # Original objects ========================================================
 
 
-    # Pseudo objects ==========================================================
+    # Control objects =========================================================
     filenames2 = [f.name for f in os.scandir(obsdir2)]
     df2_list = []
     for idx_fi, fi in enumerate(filenames2):
@@ -84,7 +84,7 @@ if __name__ == "__main__":
             df2_list.append(df)
     df2 = pd.concat(df2_list)
     df2 = df2.reset_index(drop=True)
-    # Pseudo objects ==========================================================
+    # Control objects =========================================================
 
     df1["x"] = -df1["X"]
     df1["y"] = -df1["Y"]
@@ -123,13 +123,13 @@ if __name__ == "__main__":
         else:
             lab = None
         ax.scatter(row["x"], row["y"], color=col, lw=1, ls="solid", label=lab, zorder=-1, s=si, marker=mark)
-    # Pseudo
+    # Control
     for idx, row in df2.iterrows():
         col = "blue"
         mark = "x"
         si = 10
         if idx == 0:
-            lab = f"Pseudo asteroids N={len(df2)}\n(Symmetric with respect to the NEOMIR)"
+            lab = f"Control asteroids N={len(df2)}\n(Symmetric with respect to the NEOMIR)"
         else:
             lab = None
         ax.scatter(row["x"], row["y"], color=col, lw=1, ls="solid", label=lab, zorder=-1, s=si, marker=mark)
@@ -149,5 +149,3 @@ if __name__ == "__main__":
     ax.legend(loc="lower left", fontsize=12)
     plt.savefig(out)
     plt.close()
-
-
