@@ -8,7 +8,8 @@ from multiprocessing import Manager
 
 
 def run_simulation(i, rotP_hr, Gamma, obs, eph, obj, spindir, label):
-    np.random.seed(os.getpid())
+    seed = 0
+    np.random.seed(seed)
 
     # Generate random values for lam, beta
     lam = np.random.uniform(0, 360, 1)[0]
