@@ -4,12 +4,15 @@
 Check r, delta, and alpha.
 And plot objects and Earth.
 """
+from argparse import ArgumentParser as ap
 import pandas as pd
 import matplotlib.pyplot as plt
-import subprocess, os
-from argparse import ArgumentParser as ap
+import os
 from astroquery.jplhorizons import Horizons
 
+mycolor = [
+    "#AD002D", "#1e50a2", "#69821b", "#f055f0", "#afafb0", 
+    "#0095b9", "#89c3eb", "#ec6800", "cyan", "gold"]
 
 if __name__ == "__main__":
     parser = ap(description="Plot TPM results for NEOMIR.")
@@ -113,19 +116,21 @@ if __name__ == "__main__":
     
     # Oroginal 
     for idx, row in df1.iterrows():
-        col = "red"
-        mark = "."
-        si = 10
+        col = mycolor[0]
+        mark = "o"
+        si = 50
         if idx == 0:
             lab = f"Original asteroids N={len(df1)}"
         else:
             lab = None
-        ax.scatter(row["x"], row["y"], color=col, lw=1, ls="solid", label=lab, zorder=-1, s=si, marker=mark)
+        ax.scatter(
+            row["x"], row["y"], color=col, lw=1, ls="solid", 
+            label=lab, zorder=-1, s=si, marker=mark, facecolor="None")
     # Control
     for idx, row in df2.iterrows():
-        col = "blue"
+        col = mycolor[1]
         mark = "x"
-        si = 10
+        si = 50
         if idx == 0:
             lab = f"Control asteroids N={len(df2)}\n(Symmetric with respect to the NEOMIR)"
         else:
@@ -139,7 +144,7 @@ if __name__ == "__main__":
         location='500@10',
         id="399", epochs={'start':t0, 'stop':t1, 'step':"1d"})
     Earth1 = Earth1.vectors()
-    lab = "Earth (not NEOMIR)"
+    lab = "Earth orbit"
     ax.plot(Earth1["x"], Earth1["y"], color="grey", lw=1.5, ls="dashed", label=lab, zorder=-1)
     # Sun
     ax.scatter(0, 0, marker="x", color="black", lw=1.5, s=200)
