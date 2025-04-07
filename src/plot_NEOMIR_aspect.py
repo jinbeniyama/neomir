@@ -10,6 +10,9 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import os
 
+mycolor = [
+    "#AD002D", "#1e50a2", "#69821b", "#f055f0", "#afafb0", 
+    "#0095b9", "#89c3eb", "#ec6800", "cyan", "gold"]
 
 def calc_aspect(df):
     """
@@ -137,7 +140,7 @@ if __name__ == "__main__":
     ax_d.set_ylabel("N")
 
     lab_ori, lab_pse = f"Original asteroids N={len(df1)}", f"Control asteroids N={len(df2)}"
-    col_ori, col_pse = "red", "blue"
+    col_ori, col_pse = mycolor[0], mycolor[1]
     ls_ori, ls_pse = "solid", "dashed"
     
     bins = np.arange(0, 151, 5)
@@ -157,10 +160,10 @@ if __name__ == "__main__":
         delta1_set, bins=bins, histtype="step", label=lab_ori, color=col_ori, ls=ls_ori)
     ax_d.hist(
         delta2_set, bins=bins, histtype="step", label=lab_pse, color=col_pse, ls=ls_pse)
-
-    ax_a.legend()
-    ax_r.legend()
-    ax_d.legend()
+    
+    for ax in [ax_a, ax_r, ax_d]:
+        ax.legend(loc="upper left")
+        ax.set_ylim([0, 50])
 
     out = args.out
     out = os.path.join(outdir, out)
