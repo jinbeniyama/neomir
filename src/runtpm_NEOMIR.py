@@ -21,7 +21,9 @@ def run_simulation(i, rotP_hr, Gamma, obs, eph, obj, spindir, label):
     # emissivity
     eps = 0.9
     D_km = 1.0
-    cmd = f'echo {obj} {eph} {eps} {Gamma} 0.039 0 0 | runtpm -o {obs} -S {spindir}/{spinf} -s {D_km} | grep "f>"'
+    BondA = 0.039
+    # Assume no craters (ca = 0, cr = 0)
+    cmd = f'echo {obj} {eph} {eps} {Gamma} {BondA} 0 0 | runtpm -o {obs} -S {spindir}/{spinf} -s {D_km} | grep "f>"'
     p = subprocess.Popen(cmd, shell=True, preexec_fn=os.setsid, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
     comm = p.communicate()
     output = comm[0].decode('ascii').strip()
