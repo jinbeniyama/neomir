@@ -7,13 +7,8 @@ from concurrent.futures import ProcessPoolExecutor
 from multiprocessing import Manager
 
 
-def run_simulation(i, rotP_hr, Gamma, obs, eph, obj, spindir, label):
-    seed = 0
-    np.random.seed(seed)
+def run_simulation(i, rotP_hr, lam, beta, Gamma, obs, eph, obj, spindir, label):
 
-    # Generate random values for lam, beta
-    lam = np.random.uniform(0, 360, 1)[0]
-    beta = np.random.uniform(-90, 90, 1)[0]
     spinf = f"spin{i:03d}_TI{Gamma}_{label}.txt"
     with open(f'{spindir}/{spinf}', 'wt') as f:
         print(lam, beta, rotP_hr, 0, 0, file=f)
@@ -51,16 +46,24 @@ def run_simulation(i, rotP_hr, Gamma, obs, eph, obj, spindir, label):
 
 
 def main_tpm(obs, eph, obj, N, M, rotP_hr, Gamma_values, label, spindir, outdir):
+    # Make the (lam, beta) 
+    # Assume N x M = 300
+    seed = 0
+    np.random.seed(seed)
+
+    # Generate random values for lam, beta
+    lam_list = np.random.uniform(0, 360, N*M)
+    beta_list = np.random.uniform(-90, 90, N*M)
+
     # Initialize manager for shared list
     with Manager() as manager:
         for Gamma in Gamma_values:  # Iterate over each Gamma value
             print(f"Running simulations for Gamma = {Gamma}...")
-            
             results = manager.list()  # Create a new list for each Gamma value
-            
             for cycle in range(M):
+                lam_list_M, beta_list_M = lam_list[cycle*N:(cycle+1)*N], beta_list[cycle*N:(cycle+1)*N]
                 with ProcessPoolExecutor(max_workers=N) as executor:
-                    futures = [executor.submit(run_simulation, i, rotP_hr, Gamma, obs, eph, obj, spindir, label) for i in range(N)]
+                    futures = [executor.submit(run_simulation, i, rotP_hr, lam_list_M[i], beta_list_M[i], Gamma, obs, eph, obj, spindir, label) for i in range(N)]
                     cycle_results = [f.result() for f in futures]
                     results.extend(cycle_results)  # Append the results for this cycle
 
