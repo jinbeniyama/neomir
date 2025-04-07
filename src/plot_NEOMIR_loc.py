@@ -26,7 +26,7 @@ if __name__ == "__main__":
         "--out", type=str, default="loc.jpg",
         help="Output filename")
     parser.add_argument(
-        "--outdir", type=str, default="plot",
+        "--outdir", type=str, default="fig",
         help="Directory for output file")
     args = parser.parse_args()
 
