@@ -53,4 +53,6 @@ python src/plot_8flux_map.py --resdir data/tpmout_control  --out obj1_flux_contr
 ## Miscellaneous
 ```
 # Check spin pole distributions of our samples
+# Check flux, prograde, retrograde, TI
+plot_tpmres_stat.py --resdir1 tpmresult_2bands --resdir2 tpmresult_2bands_pseudo --outdir plot 
 ```
