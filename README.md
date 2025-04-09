@@ -32,13 +32,23 @@ I note that spinfiles are identical for original and control objects since the r
 ## Plotting figures in the paper (hit the commands in ./, figures are saved in ./fig)
 ```
 # Plot locations of original asteroids and control asteroids (Figure 1.)
-python src/plot_NEOMIR_loc.py data/obsfile_original data/obsfile_control 
+python src/plot_objectslocation.py data/obsfile_original data/obsfile_control 
 ```
 
 ```
 # Plot aspect data of original asteroids and control asteroids (Figure 2.)
-python src/plot_NEOMIR_aspect.py data/obsfile_original data/obsfile_control 
+python src/plot_aspect.py data/obsfile_original data/obsfile_control 
 ```
+
+```
+# Plot results
+# Plot first one (original)
+python src/plot_8flux_map.py --resdir data/tpmout_original --out obj1_flux_original.png --outdir fig --idx_obj 1 --vmin 20 --vmax 400
+# Plot first one (pseudo)
+python src/plot_8flux_map.py --resdir data/tpmout_control  --out obj1_flux_control.png --outdir fig --idx_obj 1 --vmin 20 --vmax 400
+# You can plot all at once with `--all` option (148 objects x 6 TI = 888 files)
+```
+
 
 ## Miscellaneous
 ```
