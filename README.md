@@ -7,11 +7,11 @@
 Codes for thermal modeling of minor bodies in preparation for NEOMIR.
 
 ## Data (in /data)
-* sph32.obj (spheprical shape model with a diameter of 1 km used in the paper)
-* position.txt (positions of original objects observed by NEOMIR, in prep.)
-* spinfile (directory with spin files, for both original and control objects)
-* tpmout_original (directory with output of TPMs of original objects)
-* tpmout_control (directory with output of TPMs of control objects)
+* `sph32.obj` (spheprical shape model with a diameter of 1 km used in the paper)
+* `position.txt` (positions of original objects observed by NEOMIR, in prep.)
+* `spinfile` (directory with spin files, for both original and control objects)
+* `tpmout_original` (directory with output of TPMs of original objects)
+* `tpmout_control` (directory with output of TPMs of control objects)
 
 ## TPM (hit the commands in .)
 ```
