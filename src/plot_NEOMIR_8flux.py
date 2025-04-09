@@ -95,10 +95,10 @@ if __name__ == "__main__":
             data = np.loadtxt(filename)
         
             # Extract columns: lon, lat, flux
-            lon, lat, flux5, flux8 = data[:, 1], data[:, 2], data[:, 3], data[:, 4]
+            lon, lat, flux5, flux8 = data[:, 2], data[:, 3], data[:, 4], data[:, 5]
             # These are common
-            x1, y1, z1     = data[:, 5][0], data[:, 6][0], data[:, 7][0]
-            x2, y2, z2     = data[:, 8][0], data[:, 9][0], data[:, 10][0]
+            x1, y1, z1     = data[:, 6][0], data[:, 7][0], data[:, 8][0]
+            x2, y2, z2     = data[:, 9][0], data[:, 10][0], data[:, 11][0]
 
             # Calculate alpha, r, delta
             S = np.array([x1, y1, z1]).T
