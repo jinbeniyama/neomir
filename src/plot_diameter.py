@@ -10,19 +10,7 @@ import matplotlib.pyplot as plt
 import os
 import matplotlib.ticker as ticker
 
-mycolor = [
-    "#AD002D",
-    "#1e50a2",
-    "#69821b",
-    "#f055f0",
-    "#afafb0",
-    "#0095b9",
-    "#89c3eb",
-    "#ec6800",
-    "cyan",
-    "gold",
-    "magenta"
-    ]
+from NEOMIR_common import mycolor, Gamma_values
 
 
 if __name__ == "__main__":
@@ -44,7 +32,6 @@ if __name__ == "__main__":
     outdir = args.outdir
     os.makedirs(outdir, exist_ok=True)
 
-    Gamma_values = [0, 50, 150, 300, 500, 1000]
     
     df_list = []
     for res in args.res:
