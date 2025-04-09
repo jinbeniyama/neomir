@@ -20,6 +20,31 @@ mycolor = [
     "magenta"
     ]
 
+
+def handle_tpmres(resdir):
+    filenames = [f.name for f in os.scandir(resdir)]
+    df_list = []
+    for idx_obj, fi in enumerate(filenames):
+        filename = os.path.join(resdir, fi)
+        # Extract TI from TI300_res_141.txt
+        TI = int(fi.split("_")[0][2:])
+        data = np.loadtxt(filename)
+
+        # Extract columns: lon, lat, flux5, flux8,  x1, y1, z1, x2, y2, z2
+        lon, lat, flux5, flux8 = data[:, 2], data[:, 3], data[:, 4], data[:, 5]
+        x1, y1, z1     = data[:, 6], data[:, 7], data[:, 8]
+        x2, y2, z2     = data[:, 9], data[:, 10], data[:, 11]
+
+        df = pd.DataFrame(dict(
+            lon=lon, lat=lat, flux5=flux5, flux8=flux8,
+            X=x1, Y=y1, Z=z1, MirX=x2, MirY=y2, MirZ=z2
+            ))
+        df["TI"] = TI
+        df["objid"] = idx_obj
+        df_list.append(df)
+    df = pd.concat(df_list)
+    return df
+
 def calc_aspect(df):
     """
     Calculate alpha, delta, and r.
@@ -72,65 +97,19 @@ if __name__ == "__main__":
     key_flux = "flux8"
     
 
+    # Read original objects
+    df1 = handle_tpmres(resdir1)
+    # Read control objects
+    df2 = handle_tpmres(resdir2)
+    # Merge
+    df = pd.concat([df1, df2])
+
     out1 = f"tpmres_NEOMIR_stat_TI.jpg"
     out1 = os.path.join(outdir, out1)
     out2 = f"tpmres_NEOMIR_stat_geometry.jpg"
     out2 = os.path.join(outdir, out2)
     out3 = f"tpmres_NEOMIR_stat_geometryflux.jpg"
     out3 = os.path.join(outdir, out3)
-    
-
-    # Original objects ========================================================
-    filenames1 = [f.name for f in os.scandir(resdir1)]
-    df1_list = []
-    for idx_obj, fi in enumerate(filenames1):
-        filename = os.path.join(resdir1, fi)
-        # Extract TI from TI300_res_141.txt
-        TI = int(fi.split("_")[0][2:])
-        data = np.loadtxt(filename)
-
-        # Extract columns: lon, lat, flux5, flux8,  x1, y1, z1, x2, y2, z2
-        lon, lat, flux5, flux8 = data[:, 2], data[:, 3], data[:, 4], data[:, 5]
-        x1, y1, z1     = data[:, 6], data[:, 7], data[:, 8]
-        x2, y2, z2     = data[:, 9], data[:, 10], data[:, 11]
-
-        df = pd.DataFrame(dict(
-            lon=lon, lat=lat, flux5=flux5, flux8=flux8,
-            X=x1, Y=y1, Z=z1, MirX=x2, MirY=y2, MirZ=z2
-            ))
-        df["TI"] = TI
-        df["objid"] = idx_obj
-
-        df1_list.append(df)
-    df1 = pd.concat(df1_list)
-    # Original objects ========================================================
-
-    # Pseudo objects ==========================================================
-    filenames2 = [f.name for f in os.scandir(resdir2)]
-    df2_list = []
-    for idx_obj, fi in enumerate(filenames2):
-        filename = os.path.join(resdir2, fi)
-        # Extract TI from TI300_res_141.txt
-        TI = int(fi.split("_")[0][2:])
-        data = np.loadtxt(filename)
-
-        # Extract columns: lon, lat, flux5, flux8,  x1, y1, z1, x2, y2, z2
-        lon, lat, flux5, flux8 = data[:, 2], data[:, 3], data[:, 4], data[:, 5]
-        x1, y1, z1     = data[:, 6], data[:, 7], data[:, 8]
-        x2, y2, z2     = data[:, 9], data[:, 10], data[:, 11]
-
-        df = pd.DataFrame(dict(
-            lon=lon, lat=lat, flux5=flux5, flux8=flux8,
-            X=x1, Y=y1, Z=z1, MirX=x2, MirY=y2, MirZ=z2
-            ))
-        df["TI"] = TI
-        df["objid"] = idx_obj
-
-        df2_list.append(df)
-    df2 = pd.concat(df2_list)
-    # Original objects ========================================================
-
-    df = pd.concat([df1, df2])
 
     # Prograde
     df_pro = df[df["lat"] >= 0]
