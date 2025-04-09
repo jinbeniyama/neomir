@@ -13,7 +13,7 @@ Codes for thermal modeling of minor bodies in preparation for NEOMIR.
 * `tpmout_original` (directory with output of TPMs of original objects)
 * `tpmout_control` (directory with output of TPMs of control objects)
 
-## TPM (hit the commands in .)
+## TPM (hit the commands in ./)
 ```
 # Make observations and ephemerides files for original objects
 python src/make_NEOMIR_obseph.py --pos data/position.txt --outobs data/obsfile_original --outeph data/ephemfile_original
@@ -29,7 +29,7 @@ Then all results are saved in `./data/tpmout_original` and `./data/tpmout_contro
 I note that spinfiles are identical for original and control objects since the random seeds are specified in the code.
 
 
-## Plotting figures in the paper (hit the commands in ., figures are saved in ./fig)
+## Plotting figures in the paper (hit the commands in ./, figures are saved in ./fig)
 ```
 # Plot locations of original asteroids and control asteroids (Figure 1.)
 python src/plot_NEOMIR_loc.py data/obsfile_original data/obsfile_control 
