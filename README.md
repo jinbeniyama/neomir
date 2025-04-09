@@ -7,8 +7,11 @@
 Codes for thermal modeling of minor bodies in preparation for NEOMIR.
 
 ## Data (in /data)
-* sph32.obj (spheprical shape model used in the paper)
-* position.txt (positions of original objects observed by NEOMIR)
+* sph32.obj (spheprical shape model with a diameter of 1 km used in the paper)
+* position.txt (positions of original objects observed by NEOMIR, in prep.)
+* spinfile (directory with spin files, for both original and control objects)
+* tpmout_original (directory with output of TPMs of original objects)
+* tpmout_control (directory with output of TPMs of control objects)
 
 ## TPM (hit the commands in .)
 ```
@@ -18,20 +21,21 @@ python src/make_NEOMIR_obseph.py --pos data/position.txt --outobs data/obsfile_o
 python src/make_NEOMIR_obseph.py --pos data/position.txt --outobs data/obsfile_control --outeph data/ephemfile_control --pseudo
 
 # Do TPM for original objects
-python src/runtpm_NEOMIR.py --obs data/obsfile_original/* --eph data/ephemfile_original/* --obj data/sph32.obj --outdir data/tpmout_original
+python src/runtpm_NEOMIR.py --obs data/obsfile_original/* --eph data/ephemfile_original/* --obj data/sph32.obj --outdir data/tpmout_original --spindir data/spinfile
 # Do TPM for control objects
-python src/runtpm_NEOMIR.py --obs data/obsfile_control/* --eph data/ephemfile_control/* --obj data/sph32.obj --outdir data/tpmout_control
+python src/runtpm_NEOMIR.py --obs data/obsfile_control/* --eph data/ephemfile_control/* --obj data/sph32.obj --outdir data/tpmout_control --spindir data/spinfile
 ```
 Then all results are saved in `./data/tpmout_original` and `./data/tpmout_control`.
+I note that spinfiles are identical for original and control objects since the random seeds are specified in the code.
 
 
-## Plotting figures in the paper (hit the commands in ./plot)
+## Plotting figures in the paper (hit the commands in ., figures are saved in ./fig)
 ```
 # Plot locations of original asteroids and control asteroids (Figure 1.)
-python ../src/plot_NEOMIR_loc.py ../data/obsfile_original ../data/obsfile_control 
+python src/plot_NEOMIR_loc.py data/obsfile_original data/obsfile_control 
 ```
 
 ```
 # Plot aspect data of original asteroids and control asteroids (Figure 2.)
-python ../src/plot_NEOMIR_aspect.py ../data/obsfile_original ../data/obsfile_control 
+python src/plot_NEOMIR_aspect.py data/obsfile_original data/obsfile_control 
 ```
