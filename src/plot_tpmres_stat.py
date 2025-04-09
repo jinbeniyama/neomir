@@ -59,7 +59,7 @@ if __name__ == "__main__":
         "--resdir2", type=str, default="tpmresult_pseudo",
         help="Directory with output files")
     parser.add_argument(
-        "--outdir", type=str, default="plot",
+        "--outdir", type=str, default="fig",
         help="Directory for output file")
     args = parser.parse_args()
 
@@ -71,7 +71,6 @@ if __name__ == "__main__":
     Gamma_values = [0, 50, 150, 300, 500, 1000]
     key_flux = "flux8"
     
-
 
     out1 = f"tpmres_NEOMIR_stat_TI.jpg"
     out1 = os.path.join(outdir, out1)
@@ -91,9 +90,9 @@ if __name__ == "__main__":
         data = np.loadtxt(filename)
 
         # Extract columns: lon, lat, flux5, flux8,  x1, y1, z1, x2, y2, z2
-        lon, lat, flux5, flux8 = data[:, 1], data[:, 2], data[:, 3], data[:, 4]
-        x1, y1, z1     = data[:, 5], data[:, 6], data[:, 7]
-        x2, y2, z2     = data[:, 8], data[:, 9], data[:, 10]
+        lon, lat, flux5, flux8 = data[:, 2], data[:, 3], data[:, 4], data[:, 5]
+        x1, y1, z1     = data[:, 6], data[:, 7], data[:, 8]
+        x2, y2, z2     = data[:, 9], data[:, 10], data[:, 11]
 
         df = pd.DataFrame(dict(
             lon=lon, lat=lat, flux5=flux5, flux8=flux8,
@@ -116,9 +115,9 @@ if __name__ == "__main__":
         data = np.loadtxt(filename)
 
         # Extract columns: lon, lat, flux5, flux8,  x1, y1, z1, x2, y2, z2
-        lon, lat, flux5, flux8 = data[:, 1], data[:, 2], data[:, 3], data[:, 4]
-        x1, y1, z1     = data[:, 5], data[:, 6], data[:, 7]
-        x2, y2, z2     = data[:, 8], data[:, 9], data[:, 10]
+        lon, lat, flux5, flux8 = data[:, 2], data[:, 3], data[:, 4], data[:, 5]
+        x1, y1, z1     = data[:, 6], data[:, 7], data[:, 8]
+        x2, y2, z2     = data[:, 9], data[:, 10], data[:, 11]
 
         df = pd.DataFrame(dict(
             lon=lon, lat=lat, flux5=flux5, flux8=flux8,
