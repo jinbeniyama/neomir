@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 import os
 
+Gamma_values = [0, 50, 150, 300, 500, 1000]
 mycolor = [
     "#AD002D", "#1e50a2", "#69821b", "#f055f0", "#afafb0", "#0095b9",
     "#89c3eb", "#ec6800", "cyan", "gold", "magenta"]
