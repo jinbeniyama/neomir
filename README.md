@@ -42,9 +42,9 @@ python src/plot_aspect.py data/obsfile_original data/obsfile_control
 
 ```
 # Plot results
-# Plot first one (original)
+# Plot first one (original, Figure 4.)
 python src/plot_8flux_map.py --resdir data/tpmout_original --out obj1_flux_original.png --outdir fig --idx_obj 1 --vmin 20 --vmax 400
-# Plot first one (pseudo)
+# Plot first one (pseudo, Figure 5.)
 python src/plot_8flux_map.py --resdir data/tpmout_control  --out obj1_flux_control.png --outdir fig --idx_obj 1 --vmin 20 --vmax 400
 # You can plot all at once with `--all` option (148 objects x 6 TI = 888 files)
 ```
