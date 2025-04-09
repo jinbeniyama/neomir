@@ -96,6 +96,12 @@ if __name__ == "__main__":
         
             # Extract columns: lon, lat, flux
             lon, lat, flux5, flux8 = data[:, 2], data[:, 3], data[:, 4], data[:, 5]
+            # Since we used asteroids with diameters of 1 km in TPM to avoid the loss of digits,
+            # we have to slace fluxes here.
+            # From 1 km to 42 m (H=25, pv=0.1)
+            sf = (42./1000.)**2
+            flux5, flux8 = flux5*sf, flux8*sf
+
             # These are common
             x1, y1, z1     = data[:, 6][0], data[:, 7][0], data[:, 8][0]
             x2, y2, z2     = data[:, 9][0], data[:, 10][0], data[:, 11][0]
