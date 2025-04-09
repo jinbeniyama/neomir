@@ -49,6 +49,7 @@ def read_tpmres_neomir(resdir, idx_plot, Gamma_valuea):
     df = pd.concat(df_list)
     return df
 
+
 def calc_aspect(df):
     """
     Calculate alpha, delta, and r.
@@ -149,8 +150,6 @@ if __name__ == "__main__":
         idx_plot = args.idx_obj
     
     df = read_tpmres_neomir(resdir, idx_plot, Gamma_values)
-
-
 
     # Calculate alpha, r, and delta
     df = calc_aspect(df)
