@@ -70,6 +70,17 @@ python src/plot_8flux_map.py --resdir data/tpmout_control  --out obj1_flux_contr
 ```
 
 ```
+# Plot 8 aspect data vs. micron flux  (Figure 6.)
+python src/plot_8flux_aspect.py --resdir1 data/tpmout_original/ --resdir2 data/tpmout_control
+```
+
+```
+# Plot estimated diameters (Figures 7–10.)
+python src/plot_diameter.py data/NEATM_original_10_1b.txt data/NEATM_control_10_1b.txt --out NEATM_res_1b.png --ymax 6
+python src/plot_diameter.py data/NEATM_original_10_2b.txt data/NEATM_control_10_2b.txt --out NEATM_res_2b.png --ymax 6
+python src/plot_diameter.py data/FRM_original_10_1b.txt data/FRM_control_10_1b.txt --out FRM_res_1b.png --ymax 6
+python src/plot_diameter.py data/FRM_original_10_2b.txt data/FRM_control_10_2b.txt --out FRM_res_2b.png --ymax 6
+```
 
 ## Miscellaneous
 ```
@@ -77,3 +88,7 @@ python src/plot_8flux_map.py --resdir data/tpmout_control  --out obj1_flux_contr
 # Check flux, prograde, retrograde, TI
 plot_tpmres_stat.py --resdir1 tpmresult_2bands --resdir2 tpmresult_2bands_pseudo --outdir plot 
 ```
+
+## Dependencies
+This repository is depending on `Python`, `NumPy`, `SciPy`, `Astropy`, `Astroquery`.
+Scripts are developed on `Python 3.9.6`, `NumPy 1.26.4`, `SciPy 1.13.1`, `Astropy 6.0.1`, `Astroquery 0.4.9.post1`.
