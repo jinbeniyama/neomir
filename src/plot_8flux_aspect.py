@@ -6,70 +6,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import os
 
-mycolor = [
-    "#AD002D",
-    "#1e50a2",
-    "#69821b",
-    "#f055f0",
-    "#afafb0",
-    "#0095b9",
-    "#89c3eb",
-    "#ec6800",
-    "cyan",
-    "gold",
-    "magenta"
-    ]
-
-
-def handle_tpmres(resdir):
-    filenames = [f.name for f in os.scandir(resdir)]
-    df_list = []
-    for idx_obj, fi in enumerate(filenames):
-        filename = os.path.join(resdir, fi)
-        # Extract TI from TI300_res_141.txt
-        TI = int(fi.split("_")[0][2:])
-        data = np.loadtxt(filename)
-
-        # Extract columns: lon, lat, flux5, flux8,  x1, y1, z1, x2, y2, z2
-        lon, lat, flux5, flux8 = data[:, 2], data[:, 3], data[:, 4], data[:, 5]
-        x1, y1, z1     = data[:, 6], data[:, 7], data[:, 8]
-        x2, y2, z2     = data[:, 9], data[:, 10], data[:, 11]
-
-        df = pd.DataFrame(dict(
-            lon=lon, lat=lat, flux5=flux5, flux8=flux8,
-            X=x1, Y=y1, Z=z1, MirX=x2, MirY=y2, MirZ=z2
-            ))
-        df["TI"] = TI
-        df["objid"] = idx_obj
-        df_list.append(df)
-    df = pd.concat(df_list)
-    return df
-
-def calc_aspect(df):
-    """
-    Calculate alpha, delta, and r.
-
-    Parameter
-    ---------
-    df : pandas.DataFrame
-        input dataframe
-
-    Return
-    ------
-    df : pandas.DataFrame
-        output dataframe
-    """
-    S = np.array([df['X'].values, df['Y'].values, df['Z'].values]).T
-    normaS = np.sqrt(np.sum(S**2, axis=1))
-    O = np.array([df['MirX'].values, df['MirY'].values, df['MirZ'].values]).T
-    normaO = np.sqrt(np.sum(O**2, axis=1))
-    SO = S*O
-    pha = np.arccos(np.sum(SO, axis=1)/normaO/normaS)*180/np.pi
-   
-    df["r"] = normaS
-    df["delta"] = normaO
-    df["alpha"] = pha
-    return df
+from NEOMIR_common import mycolor, handle_tpmres, calc_aspect
 
 
 if __name__ == "__main__":
@@ -86,6 +23,9 @@ if __name__ == "__main__":
     parser.add_argument(
         "--outdir", type=str, default="fig",
         help="Directory for output file")
+    parser.add_argument(
+        "--out", type=str, default="8flux_aspect.png",
+        help="Output file")
     args = parser.parse_args()
 
     resdir1 = args.resdir1
@@ -95,8 +35,9 @@ if __name__ == "__main__":
 
     Gamma_values = [0, 50, 150, 300, 500, 1000]
     key_flux = "flux8"
+    # Font size
+    fs = 14
     
-
     # Read original objects
     df1 = handle_tpmres(resdir1)
     # Read control objects
@@ -104,35 +45,82 @@ if __name__ == "__main__":
     # Merge
     df = pd.concat([df1, df2])
 
-    out1 = f"tpmres_NEOMIR_stat_TI.jpg"
-    out1 = os.path.join(outdir, out1)
-    out2 = f"tpmres_NEOMIR_stat_geometry.jpg"
-    out2 = os.path.join(outdir, out2)
-    out3 = f"tpmres_NEOMIR_stat_geometryflux.jpg"
-    out3 = os.path.join(outdir, out3)
+    # Calculate alpha, r, and delta
+    df = calc_aspect(df)
 
-    # Prograde
-    df_pro = df[df["lat"] >= 0]
-    df_ret = df[df["lat"] < 0]
-    
-    f5_min = np.min(df["flux5"])
-    f5_max = np.max(df["flux5"])
-    f8_min = np.min(df["flux8"])
-    f8_max = np.max(df["flux8"])
-    df5_min = df[df["flux5"] == f5_min]
-    df5_max = df[df["flux5"] == f5_max]
-    df8_min = df[df["flux8"] == f8_min]
-    df8_max = df[df["flux8"] == f8_max]
-    print("Minimum 5 micron flux:")
-    print(df5_min)
-    print("Minimum 8 micron flux:")
-    print(df8_min)
-    print("Maximum 5 micron flux:")
-    print(df5_max)
-    print("Maximum 8 micron flux:")
-    print(df8_max)
+    # Plot r, delta, alpha vs. flux (TI dependence) ===========================
+    fig = plt.figure(figsize=(16, 14))
+    ax_a = fig.add_axes([0.10, 0.58, 0.25, 0.37])
+    ax_r = fig.add_axes([0.40, 0.58, 0.25, 0.37])
+    ax_d = fig.add_axes([0.70, 0.58, 0.25, 0.37])
+    ax_a2 = fig.add_axes([0.10, 0.10, 0.25, 0.37])
+    ax_r2 = fig.add_axes([0.40, 0.10, 0.25, 0.37])
+    ax_d2 = fig.add_axes([0.70, 0.10, 0.25, 0.37])
+    ax_a2.set_xlabel(r"Phase angle, $\alpha$ [deg]", fontsize=fs)
+    ax_r2.set_xlabel("Heliocentric distance, r [au]", fontsize=fs)
+    ax_d2.set_xlabel(r"NEOMIR-centric distance, $\Delta$ [au]", fontsize=fs)
+    ax_a.set_ylabel("Flux density [$\mu$Jy]", fontsize=fs)
+    ax_a2.set_ylabel(r"Flux density$\times \Delta^2$ [$\mu$Jy]", fontsize=fs)
 
 
+    for idx_TI, TI in enumerate(Gamma_values):
+        df_TI = df[df["TI"] == TI]
+        zorder = 100 - idx_TI
+
+        label = f"{TI} tiu"
+
+        ax_a.scatter(
+            df_TI["alpha"], df_TI[key_flux], label=label, color=mycolor[idx_TI], s=15, marker="o", fc="None", zorder=zorder)
+        ax_r.scatter(
+            df_TI["r"], df_TI[key_flux], label=label, color=mycolor[idx_TI], s=15, marker="o", fc="None", zorder=zorder)
+        ax_d.scatter(
+            df_TI["delta"], df_TI[key_flux], label=label, color=mycolor[idx_TI], s=15, marker="o", fc="None", zorder=zorder)
+
+        # Normalize the flux with delta
+        # We cannot correct the effect of r, which affects the temperature dist.
+        df_TI[key_flux] = df_TI[key_flux]*df_TI["delta"]*df_TI["delta"]
+
+        ax_a2.scatter(
+            df_TI["alpha"], df_TI[key_flux], label=label, color=mycolor[idx_TI], s=15, marker="o", fc="None", zorder=zorder)
+        ax_r2.scatter(
+            df_TI["r"], df_TI[key_flux], label=label, color=mycolor[idx_TI], s=15, marker="o", fc="None", zorder=zorder)
+        ax_d2.scatter(
+            df_TI["delta"], df_TI[key_flux], label=label, color=mycolor[idx_TI], s=15, marker="o", fc="None", zorder=zorder)
+     
+    for ax in fig.axes:
+        ax.set_yscale("log")
+        ax.legend()
+    out = os.path.join(outdir, args.out)
+    plt.savefig(out)
+    plt.close()
+    # Plot r, delta, alpha vs. flux (TI dependence) ===========================
+
+
+    assert False, 1
+    ## Prograde
+    #df_pro = df[df["lat"] >= 0]
+    #df_ret = df[df["lat"] < 0]
+    #
+    #f5_min = np.min(df["flux5"])
+    #f5_max = np.max(df["flux5"])
+    #f8_min = np.min(df["flux8"])
+    #f8_max = np.max(df["flux8"])
+    #df5_min = df[df["flux5"] == f5_min]
+    #df5_max = df[df["flux5"] == f5_max]
+    #df8_min = df[df["flux8"] == f8_min]
+    #df8_max = df[df["flux8"] == f8_max]
+    #print("Minimum 5 micron flux:")
+    #print(df5_min)
+    #print("Minimum 8 micron flux:")
+    #print(df8_min)
+    #print("Maximum 5 micron flux:")
+    #print(df5_max)
+    #print("Maximum 8 micron flux:")
+    #print(df8_max)
+    #out1 = f"tpmres_NEOMIR_stat_TI.jpg"
+    #out1 = os.path.join(outdir, out1)
+    #out2 = f"tpmres_NEOMIR_stat_geometry.jpg"
+    #out2 = os.path.join(outdir, out2)
     # Plot Pro/retrograde, TI,  ===============================================
     fig = plt.figure(figsize=(16, 12))
     ax_lon = fig.add_axes([0.40, 0.55, 0.2, 0.35])
@@ -221,9 +209,6 @@ if __name__ == "__main__":
     # Plot Pro/retrograde, TI,  ===============================================
 
 
-    # Calculate alpha, r, and delta
-    df = calc_aspect(df)
-
 
     r_set = set(df["r"])
     delta_set = set(df["delta"])
@@ -260,48 +245,3 @@ if __name__ == "__main__":
     plt.savefig(out2)
     plt.close()
     # Plot r, delta, alpha dependence =========================================
-
-    
-    # Plot r, delta, alpha vs. flux (TI dependence) ===========================
-    fig = plt.figure(figsize=(16, 16))
-    ax_a = fig.add_axes([0.10, 0.55, 0.25, 0.3])
-    ax_r = fig.add_axes([0.40, 0.55, 0.25, 0.3])
-    ax_d = fig.add_axes([0.70, 0.55, 0.25, 0.3])
-    ax_a2 = fig.add_axes([0.10, 0.10, 0.25, 0.3])
-    ax_r2 = fig.add_axes([0.40, 0.10, 0.25, 0.3])
-    ax_d2 = fig.add_axes([0.70, 0.10, 0.25, 0.3])
-    ax_a2.set_xlabel("Phase angle [deg]")
-    ax_r2.set_xlabel("Heliocentric distance [au]")
-    ax_d2.set_xlabel("NEOMIR-centric distance [au]")
-    ax_a.set_ylabel("Flux density [$\mu$Jy]")
-    ax_a2.set_ylabel(r"Flux density$\times \Delta^2$ [$\mu$Jy]")
-
-    ax_a.scatter(
-        df["alpha"], df[key_flux], label="All", color="black", s=0.1)
-    ax_r.scatter(
-        df["r"], df[key_flux], label="All", color="black", s=0.1)
-    ax_d.scatter(
-        df["delta"], df[key_flux], label="All", color="black", s=0.1)
-
-    for idx_TI, TI in enumerate(Gamma_values):
-        df_TI = df[df["TI"] == TI]
-        zorder = 100 - idx_TI
-
-        # Normalize the flux with delta
-        # We cannot correct the effect of r, which affects the temperature dist.
-        df_TI[key_flux] = df_TI[key_flux]*df_TI["delta"]*df_TI["delta"]
-
-
-        ax_a2.scatter(
-            df_TI["alpha"], df_TI[key_flux], label=f"{TI} tiu", color=mycolor[idx_TI], s=15, marker="o", fc="None", zorder=zorder)
-        ax_r2.scatter(
-            df_TI["r"], df_TI[key_flux], label=f"{TI} tiu", color=mycolor[idx_TI], s=15, marker="o", fc="None", zorder=zorder)
-        ax_d2.scatter(
-            df_TI["delta"], df_TI[key_flux], label=f"{TI} tiu", color=mycolor[idx_TI], s=15, marker="o", fc="None", zorder=zorder)
-     
-    for ax in fig.axes:
-        ax.set_yscale("log")
-        ax.legend()
-    plt.savefig(out3)
-    plt.close()
-    # Plot r, delta, alpha vs. flux (TI dependence) ===========================
