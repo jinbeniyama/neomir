@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-from argparse import ArgumentParser as ap
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
 import os
 
 mycolor = [
