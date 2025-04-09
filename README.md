@@ -4,7 +4,7 @@
 [developer mail](mailto:beniyama@oca.eu)
 
 ## Overview
-Codes for thermal modeling of minor bodies in preparation for NEOMIR.
+Data and codes for thermal modeling of minor bodies in preparation for NEOMIR (Delbo, et al.).
 
 ## Data (in /data)
 * `sph32.obj` (spheprical shape model with a diameter of 1 km used in the paper)
