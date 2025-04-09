@@ -39,3 +39,8 @@ python src/plot_NEOMIR_loc.py data/obsfile_original data/obsfile_control
 # Plot aspect data of original asteroids and control asteroids (Figure 2.)
 python src/plot_NEOMIR_aspect.py data/obsfile_original data/obsfile_control 
 ```
+
+## Miscellaneous
+```
+# Check spin pole distributions of our samples
+```
