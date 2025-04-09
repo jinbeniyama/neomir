@@ -29,6 +29,24 @@ Then all results are saved in `./data/tpmout_original` and `./data/tpmout_contro
 I note that spinfiles are identical for original and control objects since the random seeds are specified in the code.
 
 
+## NEATM/FRM (hit the commands in ./)
+```
+# Calculate diameters of 10 objects with NEATM 
+## NEATM, 1 band
+python src/calc_D_fittm.py --resdir data/tpmout_original --idx_obj 1 2 3 4 5 6 7 8 9 10 --out NEATM_original_10_1b.txt --model NEATM
+python src/calc_D_fittm.py --resdir data/tpmout_control --idx_obj 1 2 3 4 5 6 7 8 9 10 --out NEATM_control_10_1b.txt --model NEATM
+## NEATM, 2 bands
+python src/calc_D_fittm.py --resdir data/tpmout_original --idx_obj 1 2 3 4 5 6 7 8 9 10 --out NEATM_original_10_2b.txt --model NEATM --fiteta
+python src/calc_D_fittm.py --resdir data/tpmout_control --idx_obj 1 2 3 4 5 6 7 8 9 10 --out NEATM_control_10_2b.txt --model NEATM --fiteta
+
+# Calculate diameters of 10 objects with FRM
+## FRM (1 band)
+python src/calc_D_fittm.py --resdir data/tpmout_original --idx_obj 1 2 3 4 5 6 7 8 9 10 --out FRM_original_10_1b.txt --model FRM
+python src/calc_D_fittm.py --resdir data/tpmout_control --idx_obj 1 2 3 4 5 6 7 8 9 10 --out FRM_control_10_1b.txt --model FRM
+## FRM (2 bands, eta is fixed, but the name of option is `fiteta`)
+python src/calc_D_fittm.py --resdir data/tpmout_original --idx_obj 1 2 3 4 5 6 7 8 9 10 --out FRM_original_10_2b.txt --model FRM --fiteta
+python src/calc_D_fittm.py --resdir data/tpmout_control --idx_obj 1 2 3 4 5 6 7 8 9 10 --out FRM_control_10_2b.txt --model FRM --fiteta
+```
 
 
 ## Plotting figures in the paper (hit the commands in ./, figures are saved in ./fig)
