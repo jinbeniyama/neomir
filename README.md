@@ -29,6 +29,8 @@ Then all results are saved in `./data/tpmout_original` and `./data/tpmout_contro
 I note that spinfiles are identical for original and control objects since the random seeds are specified in the code.
 
 
+
+
 ## Plotting figures in the paper (hit the commands in ./, figures are saved in ./fig)
 ```
 # Plot locations of original asteroids and control asteroids (Figure 1.)
@@ -41,14 +43,15 @@ python src/plot_aspect.py data/obsfile_original data/obsfile_control
 ```
 
 ```
-# Plot results
-# Plot first one (original, Figure 4.)
+# Plot 8 micron flux map
+## First one (original, Figure 4.)
 python src/plot_8flux_map.py --resdir data/tpmout_original --out obj1_flux_original.png --outdir fig --idx_obj 1 --vmin 20 --vmax 400
-# Plot first one (pseudo, Figure 5.)
+## First one (pseudo, Figure 5.)
 python src/plot_8flux_map.py --resdir data/tpmout_control  --out obj1_flux_control.png --outdir fig --idx_obj 1 --vmin 20 --vmax 400
-# You can plot all at once with `--all` option (148 objects x 6 TI = 888 files)
+## You can plot all at once with `--all` option (148 objects x 6 TI = 888 files)
 ```
 
+```
 
 ## Miscellaneous
 ```
