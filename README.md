@@ -27,12 +27,11 @@ Then all results are saved in `./data/tpmout_original` and `./data/tpmout_contro
 
 ## Plotting figures in the paper (hit the commands in ./plot)
 ```
-# Plot locations of original asteroids and control asteroids
-python ../src/plot_NEOMIR_loc.py /Users/beniyama/research/neomir/tpm/obsfile_2bands/ /Users/beniyama/research/neomir/tpm/obsfile_2bands_pseudo/ --outdir fig --out loc.png
+# Plot locations of original asteroids and control asteroids (Figure 1.)
+python ../src/plot_NEOMIR_loc.py ../data/obsfile_original ../data/obsfile_control 
 ```
 
 ```
-# Plot aspect data of original asteroids and control asteroids
-python ../src/plot_NEOMIR_aspect.py (directory_with_obsfile_original) (directory_with_obsfile_control) --outdir fig --out aspect.png
-
+# Plot aspect data of original asteroids and control asteroids (Figure 2.)
+python ../src/plot_NEOMIR_aspect.py ../data/obsfile_original ../data/obsfile_control 
 ```
