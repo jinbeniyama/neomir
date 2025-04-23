@@ -17,6 +17,7 @@ def run_simulation(i, rotP_hr, lam, beta, Gamma, obs, eph, obj, spindir, label):
     eps = 0.9
     D_km = 1.0
     BondA = 0.039
+
     # Assume no craters (ca = 0, cr = 0)
     cmd = f'echo {obj} {eph} {eps} {Gamma} {BondA} 0 0 | runtpm -o {obs} -S {spindir}/{spinf} -s {D_km} | grep "f>"'
     p = subprocess.Popen(cmd, shell=True, preexec_fn=os.setsid, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
@@ -25,14 +26,21 @@ def run_simulation(i, rotP_hr, lam, beta, Gamma, obs, eph, obj, spindir, label):
 
     if not output:
         raise ValueError(f"Command produced no output: {cmd}")
-
+    
     split_output = output.split()
     if len(split_output) <= 7:
         raise IndexError(f"Unexpected command output: {output}")
     
     # Fluxes in microJy
-    flux_5 = float(split_output[7]) * 1e6
-    flux_8 = float(split_output[17]) * 1e6
+    # The first flux is "7"
+    # 7 to 20 micron
+    #with open("test", "w") as f:
+    #    f.writelines(split_output)
+
+    if Gamma == 0:
+        fluxes = " ".join(f"{float(split_output[7 + (i - 5) * 10]) * 1e6}" for i in range(5, 21))
+    else:
+        fluxes = " ".join(f"{float(split_output[7 + (i - 5) * 11]) * 1e6}" for i in range(5, 21))
     # Extract locations of asteroids from obsfile
     with open(obs) as f_obs: 
         lines = f_obs.readlines()
@@ -41,7 +49,7 @@ def run_simulation(i, rotP_hr, lam, beta, Gamma, obs, eph, obj, spindir, label):
         xyz2 = lines[4]
         x2, y2, z2 = xyz2.split()
 
-    log_entry = f"{i} {D_km} {lam} {beta} {flux_5} {flux_8} {x1} {y1} {z1} {x2} {y2} {z2}\n"
+    log_entry = f"{i} {D_km} {lam} {beta} {x1} {y1} {z1} {x2} {y2} {z2} {fluxes}\n"
     return log_entry  # Return the formatted log entry
 
 
@@ -70,7 +78,9 @@ def main_tpm(obs, eph, obj, N, M, rotP_hr, Gamma_values, label, spindir, outdir)
                 print(f"Cycle {cycle + 1}/{M} for Gamma = {Gamma} completed.")
             
             # Write all results for the current Gamma value to the file
+            header = "idx D_km lam beta x1 y1 z1 x2 y2 z2 flux5 flux6 flux7 flux8 flux9 flux10 flux11 flux12 flux13 flux14 flux15 flux16 flux17 flux18 flux19 flux20\n"
             with open(f'{outdir}/TI{Gamma}_res_{label}.txt', "w") as f:
+                f.write(header)
                 f.writelines(results)  # Write all results at once
 
 if __name__ == "__main__":
