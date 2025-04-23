@@ -96,7 +96,7 @@ if __name__ == "__main__":
         # heliocentric X,Y,Z components of the vector from the asteroid to the Earth 
         # as SEEN AT THE ASTEROID. (i.e., Just the location)
         Nobs = 1
-        Ndata = 2
+        Ndata = 16
 
         obs = f"obs_{idx+1:03d}.txt"
         obs = os.path.join(outobs, obs)
@@ -106,7 +106,7 @@ if __name__ == "__main__":
             f.write(f"{t0} {Ndata}\n")
             f.write(f"{x_ast} {y_ast} {z_ast}\n")
             f.write(f"{x_mir} {y_mir} {z_mir}\n")
-            # Dummy flux at 5 and 8 micron
+            # Dummy fluxes
             f.write(f"5 1 1\n")
             f.write(f"6 1 1\n")
             f.write(f"7 1 1\n")
