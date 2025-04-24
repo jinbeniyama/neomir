@@ -14,19 +14,27 @@ Data and codes for thermal modeling of minor bodies in preparation for NEOMIR (D
 * `tpmout_control` (directory with output of TPMs of control objects)
 
 ## TPM (hit the commands in ./)
+- Make observations and ephemerides files for original objects
 ```
-# Make observations and ephemerides files for original objects
 python src/make_NEOMIR_obseph.py --pos data/position.txt --outobs data/obsfile_original --outeph data/ephemfile_original
-# Make observations and ephemerides files for control objects
+```
+- Make observations and ephemerides files for control objects
+```
 python src/make_NEOMIR_obseph.py --pos data/position.txt --outobs data/obsfile_control --outeph data/ephemfile_control --pseudo
+```
 
-# Do TPM for original objects
+- Do TPM for original objects
+```
 python src/runtpm_NEOMIR.py --obs data/obsfile_original/* --eph data/ephemfile_original/* --obj data/sph32.obj --outdir data/tpmout_original --spindir data/spinfile
-# Do TPM for control objects
+```
+- Do TPM for control objects
+```
 python src/runtpm_NEOMIR.py --obs data/obsfile_control/* --eph data/ephemfile_control/* --obj data/sph32.obj --outdir data/tpmout_control --spindir data/spinfile
 ```
 Then all results are saved in `./data/tpmout_original` and `./data/tpmout_control`.
 I note that spinfiles are identical for original and control objects since the random seeds are specified in the code.
+I also note that the current code is optimized for 'old version' of the TPM code. 
+If you use the 'new version' of the TPM code, you cannot extract fluxes since the new one output emissivity in the line start with `f>`.
 
 
 ## NEATM/FRM (hit the commands in ./)
