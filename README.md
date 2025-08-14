@@ -60,20 +60,20 @@ python src/calc_D_fittm.py --resdir data/tpmout_control --idx_obj 1 2 3 4 5 6 7 
 ## Plotting figures in the paper (hit the commands in ./, figures are saved in ./fig)
 ```
 # Plot locations of original asteroids and control asteroids (Figure 1.)
-python src/plot_objectslocation.py data/obsfile_original data/obsfile_control 
+python src/plot_objectslocation.py data/obsfile_original data/obsfile_control --out location_NEOMIR_samples.jpg
 ```
 
 ```
 # Plot aspect data of original asteroids and control asteroids (Figure 2.)
-python src/plot_aspect.py data/obsfile_original data/obsfile_control 
+python src/plot_aspect.py data/obsfile_original data/obsfile_control --out aspect_NEOMIR_samples.jpg
 ```
 
 ```
 # Plot 8 micron flux map
 ## First one (original, Figure 4.)
-python src/plot_8flux_map.py --resdir data/tpmout_original --out obj1_flux_original.png --outdir fig --idx_obj 1 --vmin 20 --vmax 400
+python src/plot_8flux_map.py --resdir data/tpmout_original --idx_obj 1 --vmin 20 --vmax 400 --out obj1_flux_original.png
 ## First one (pseudo, Figure 5.)
-python src/plot_8flux_map.py --resdir data/tpmout_control  --out obj1_flux_control.png --outdir fig --idx_obj 1 --vmin 20 --vmax 400
+python src/plot_8flux_map.py --resdir data/tpmout_control  --idx_obj 1 --vmin 20 --vmax 400 --out obj1_flux_control.png
 ## You can plot all at once with `--all` option (148 objects x 6 TI = 888 files)
 ```
 
