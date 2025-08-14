@@ -119,8 +119,9 @@ if __name__ == "__main__":
             delta = np.sqrt(np.sum(O**2))
             SO = S*O
             alpha = np.arccos(np.sum(SO)/r/delta)*180/np.pi
-            print(f"  r, delta, alpha = {r:.2f}, {delta:.2f}, {alpha:.2f}")
-            print(f"Gamma {Gamma}: min={np.min(flux)}, max={np.max(flux)}, median={np.median(flux)}, std={np.std(flux)}")
+            if idx == 0:
+                print(f"  r, delta, alpha = {r:.2f}, {delta:.2f}, {alpha:.2f}")
+            print(f"  Fluxes ({key_flux}) [microJy] when thermal inertia = {Gamma:04d}: min={np.min(flux):.2f}, max={np.max(flux):.2f}, median={np.median(flux):.2f}, std={np.std(flux):.2f}")
             
                     
             info = r"(r, $\Delta$, $\alpha$) = " + f"({r:.2f} au, {delta:.2f} au, {alpha:.2f} deg)"
