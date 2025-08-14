@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Plot 8 micron flux!
+"""Plot flux map!
 """
 from argparse import ArgumentParser as ap
 import numpy as np
@@ -16,6 +15,9 @@ if __name__ == "__main__":
     parser.add_argument(
         "--idx_obj", type=int, nargs="*", default=[1],
         help="Index of objects to be plotted")
+    parser.add_argument(
+        "--key_flux", type=str, default="flux8",
+        help="Keyword to specify flux")
     parser.add_argument(
         "--all", action="store_true", default=False,
         help="Try to plot all resuls")
@@ -46,6 +48,7 @@ if __name__ == "__main__":
     Gamma_values = [0, 50, 150, 300, 500, 1000]
     vmin, vmax = args.vmin, args.vmax
     cmap = args.cmap
+    key_flux = args.key_flux
     
     if args.all:
         # Try to find object id
@@ -97,14 +100,13 @@ if __name__ == "__main__":
             df = pd.read_csv(filename, sep=" ")
             lon = df["lam"]
             lat = df["beta"]
-            # Why 8 micron?
-            flux8 = df["flux8"]
+            flux = df[key_flux]
         
             # Since we used asteroids with diameters of 1 km in TPM to avoid the loss of digits,
             # we have to slace fluxes here.
             # From 1 km to 42 m (H=25, pv=0.1)
             sf = (42./1000.)**2
-            flux8 = flux8*sf
+            flux = flux*sf
 
             # These are common
             x1, y1, z1 = df["x1"], df["y1"], df["z1"]
@@ -118,7 +120,7 @@ if __name__ == "__main__":
             SO = S*O
             alpha = np.arccos(np.sum(SO)/r/delta)*180/np.pi
             print(f"  r, delta, alpha = {r:.2f}, {delta:.2f}, {alpha:.2f}")
-            print(f"Gamma {Gamma}: min={np.min(flux8)}, max={np.max(flux8)}, median={np.median(flux8)}, std={np.std(flux8)}")
+            print(f"Gamma {Gamma}: min={np.min(flux)}, max={np.max(flux)}, median={np.median(flux)}, std={np.std(flux)}")
             
                     
             info = r"(r, $\Delta$, $\alpha$) = " + f"({r:.2f} au, {delta:.2f} au, {alpha:.2f} deg)"
@@ -126,7 +128,7 @@ if __name__ == "__main__":
             fig.suptitle(info, fontsize=20)
         
             # Interpolate scattered data to grid
-            flux_grid = griddata((lon, lat), flux8, (lon_mesh, lat_mesh), method='cubic')
+            flux_grid = griddata((lon, lat), flux, (lon_mesh, lat_mesh), method='cubic')
         
             # Plot in the correct subplot (3x2 grid)
             ax = axs[idx] 
@@ -146,7 +148,7 @@ if __name__ == "__main__":
             ax.set_ylim([-90, 90])
             ax.set_title(r"$\Gamma$" + f" = {Gamma} tiu", fontsize=14)
             if (Gamma>0):
-                allFluxes.extend(flux8)
+                allFluxes.extend(flux)
         
         # Useless?
         #allFluxes = np.sort(allFluxes)
