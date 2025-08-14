@@ -96,7 +96,6 @@ if __name__ == "__main__":
         for idx, Gamma in enumerate(Gamma_values):
             filename = f"TI{Gamma}_res_{idx_obj:03d}.txt"  # Load the corresponding Gamma file
             filename = os.path.join(resdir, filename)
-            # Avoid "ValueError: could not convert string 'idx' to float64 at row 0, column 1."
             df = pd.read_csv(filename, sep=" ")
             lon = df["lam"]
             lat = df["beta"]
