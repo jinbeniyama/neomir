@@ -5,6 +5,7 @@ Plot 8 micron flux!
 """
 from argparse import ArgumentParser as ap
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
 import os
 from scipy.interpolate import griddata
@@ -92,19 +93,22 @@ if __name__ == "__main__":
         for idx, Gamma in enumerate(Gamma_values):
             filename = f"TI{Gamma}_res_{idx_obj:03d}.txt"  # Load the corresponding Gamma file
             filename = os.path.join(resdir, filename)
-            data = np.loadtxt(filename)
+            # Avoid "ValueError: could not convert string 'idx' to float64 at row 0, column 1."
+            df = pd.read_csv(filename, sep=" ")
+            lon = df["lam"]
+            lat = df["beta"]
+            # Why 8 micron?
+            flux8 = df["flux8"]
         
-            # Extract columns: lon, lat, flux
-            lon, lat, flux5, flux8 = data[:, 2], data[:, 3], data[:, 4], data[:, 5]
             # Since we used asteroids with diameters of 1 km in TPM to avoid the loss of digits,
             # we have to slace fluxes here.
             # From 1 km to 42 m (H=25, pv=0.1)
             sf = (42./1000.)**2
-            flux5, flux8 = flux5*sf, flux8*sf
+            flux8 = flux8*sf
 
             # These are common
-            x1, y1, z1     = data[:, 6][0], data[:, 7][0], data[:, 8][0]
-            x2, y2, z2     = data[:, 9][0], data[:, 10][0], data[:, 11][0]
+            x1, y1, z1 = df["x1"], df["y1"], df["z1"]
+            x2, y2, z2 = df["x2"], df["y2"], df["z2"]
 
             # Calculate alpha, r, delta
             S = np.array([x1, y1, z1]).T
