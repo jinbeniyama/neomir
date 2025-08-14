@@ -25,7 +25,7 @@ if __name__ == "__main__":
         "--ymax", type=float, default=0,
         help="Maxmimum y")
     parser.add_argument(
-        "--outdir", type=str, default="plot",
+        "--outdir", type=str, default="fig",
         help="Directory for output file")
     args = parser.parse_args()
 
