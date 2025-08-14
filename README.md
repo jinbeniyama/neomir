@@ -71,15 +71,15 @@ python src/plot_aspect.py data/obsfile_original data/obsfile_control --out aspec
 ```
 # Plot 8 micron flux map
 ## First one (original, Figure 4.)
-python src/plot_8flux_map.py --resdir data/tpmout_original --idx_obj 1 --vmin 20 --vmax 400 --out obj1_flux_original.png
+python src/plot_flux_map.py --key_flux flux8 --resdir data/tpmout_original --idx_obj 1 --vmin 20 --vmax 400 --out obj1_flux_original.png
 ## First one (pseudo, Figure 5.)
-python src/plot_8flux_map.py --resdir data/tpmout_control  --idx_obj 1 --vmin 20 --vmax 400 --out obj1_flux_control.png
+python src/plot_flux_map.py --key_flux flux8 --resdir data/tpmout_control  --idx_obj 1 --vmin 20 --vmax 400 --out obj1_flux_control.png
 ## You can plot all at once with `--all` option (148 objects x 6 TI = 888 files)
 ```
 
 ```
 # Plot 8 aspect data vs. micron flux  (Figure 6.)
-python src/plot_8flux_aspect.py --resdir1 data/tpmout_original/ --resdir2 data/tpmout_control
+python src/plot_flux_aspect.py --key_flux flux8 --resdir1 data/tpmout_original/ --resdir2 data/tpmout_control --out flux8_vs_aspect.jpg
 ```
 
 ```
