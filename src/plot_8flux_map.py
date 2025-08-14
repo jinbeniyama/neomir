@@ -34,7 +34,7 @@ if __name__ == "__main__":
         "--out", type=str, default=None,
         help="Output filename (only for N(idx_obj)==1)")
     parser.add_argument(
-        "--outdir", type=str, default="plot",
+        "--outdir", type=str, default="fig",
         help="Directory for output file")
     args = parser.parse_args()
 
