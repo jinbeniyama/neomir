@@ -4,3 +4,6 @@ jnote
 
 # This file is provided by a collaborator
 data/position.txt
+
+# These are output files by running scripts in the repository
+data/spinfile
