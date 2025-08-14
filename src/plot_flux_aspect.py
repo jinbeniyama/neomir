@@ -27,7 +27,7 @@ if __name__ == "__main__":
         "--outdir", type=str, default="fig",
         help="Directory for output file")
     parser.add_argument(
-        "--out", type=str, default="8flux_aspect.png",
+        "--out", type=str, default="flux_vs_aspect.png",
         help="Output file")
     args = parser.parse_args()
 
