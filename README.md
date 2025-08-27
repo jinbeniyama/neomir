@@ -84,8 +84,8 @@ python scripts/plot_flux_aspect.py --key_flux flux8 --resdir1 data/tpmout_origin
 
 ```
 # Plot estimated diameters (Figures 7–10.)
-python scripts/plot_diameter.py data/NEATM_original_10_1b.txt data/NEATM_control_10_1b.txt --out NEATM_res_1b.png --ymax 6
-python scripts/plot_diameter.py data/NEATM_original_10_2b.txt data/NEATM_control_10_2b.txt --out NEATM_res_2b.png --ymax 6
+python scripts/plot_diameter.py data/NEATM_original_10_1b.txt data/NEATM_control_10_1b.txt --out NEATM_res_1b.png --ymax 6 --outeta NEATM_eta_1b.png
+python scripts/plot_diameter.py data/NEATM_original_10_2b.txt data/NEATM_control_10_2b.txt --out NEATM_res_2b.png --ymax 6 --outeta NEATM_eta_2b.png
 python scripts/plot_diameter.py data/FRM_original_10_1b.txt data/FRM_control_10_1b.txt --out FRM_res_1b.png --ymax 6
 python scripts/plot_diameter.py data/FRM_original_10_2b.txt data/FRM_control_10_2b.txt --out FRM_res_2b.png --ymax 6
 ```
