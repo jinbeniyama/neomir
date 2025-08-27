@@ -13,6 +13,9 @@ data/ephemfile_original
 data/obsfile_control
 data/ephemfile_control
 
+# temporal, old results
+data/temp
+
 #data/FRM_control_10_1b.txt
 #data/FRM_control_10_2b.txt
 #data/FRM_original_10_1b.txt
