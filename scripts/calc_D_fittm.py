@@ -30,18 +30,20 @@ def read_tpmres_neomir(resdir, idx_plot, Gamma_valuea):
         for idx, Gamma in enumerate(Gamma_values):
             filename = f"TI{Gamma}_res_{idx_obj:03d}.txt"  # Load the corresponding Gamma file
             filename = os.path.join(resdir, filename)
-            data = np.loadtxt(filename)
+
+            df = pd.read_csv(filename, sep=" ")
 
             # Extract columns: lon, lat, flux5, flux8,  x1, y1, z1, x2, y2, z2
-            D, lon, lat  = data[:, 1], data[:, 2], data[:, 3], 
-            flux5, flux8 = data[:, 4], data[:, 5]
-            x1, y1, z1   = data[:, 6], data[:, 7], data[:, 8]
-            x2, y2, z2   = data[:, 9], data[:, 10], data[:, 11]
+            D, lon, lat  = df["D_km"], df["lam"], df["beta"]
+            flux5, flux8 = df["flux5"], df["flux8"]
+            x1, y1, z1   = df["x1"], df["y1"], df["z1"]
+            x2, y2, z2   = df["x2"], df["y2"], df["z2"]
 
             df = pd.DataFrame(dict(
                 D=D, lon=lon, lat=lat, flux5=flux5, flux8=flux8,
                 X=x1, Y=y1, Z=z1, MirX=x2, MirY=y2, MirZ=z2
                 ))
+
             df["TI"] = Gamma
             df["objid"] = idx_obj
 
@@ -155,10 +157,10 @@ if __name__ == "__main__":
     df = calc_aspect(df)
 
     eta = args.eta
-    print("Parameters for NEATM")
+    print("Parameters for NEATM/FRM")
     print(f"  H={H}, eta={eta}")
-    D_NEATM_list = []
-    eta_NEATM_list = []
+    D_model_list = []
+    eta_model_list = []
     df = df.reset_index(drop=True)
 
     for idx, row in df.iterrows():
@@ -188,16 +190,16 @@ if __name__ == "__main__":
         p = subprocess.Popen(cmd, shell=True, preexec_fn=os.setsid, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
         comm = p.communicate()
         res = comm[0].decode("ascii").split()
-        D_NEATM = float(res[1])
-        eta_NEATM = float(res[5])
+        D_model = float(res[1])
+        eta_model = float(res[5])
         # Diameter in km
-        D_NEATM_list.append(D_NEATM)
-        eta_NEATM_list.append(eta_NEATM)
+        D_model_list.append(D_model)
+        eta_model_list.append(eta_model)
 
-    df["D_NEATM"] = D_NEATM_list
+    df["D_model"] = D_model_list
     df["D_true"] = D_true
     df["model"] = args.model
-    df["eta"] = eta_NEATM_list
+    df["eta"] = eta_model_list
     df["etafit"] = etafit
 
     # Save results in a new file
