@@ -41,53 +41,53 @@ If you use the 'new version' of the TPM code, you cannot extract fluxes since th
 ```
 # Calculate diameters of 10 objects with NEATM 
 ## NEATM, 1 band
-python src/calc_D_fittm.py --resdir data/tpmout_original --idx_obj 1 2 3 4 5 6 7 8 9 10 --out NEATM_original_10_1b.txt --model NEATM
-python src/calc_D_fittm.py --resdir data/tpmout_control --idx_obj 1 2 3 4 5 6 7 8 9 10 --out NEATM_control_10_1b.txt --model NEATM
+python scripts/calc_D_fittm.py --resdir data/tpmout_original --idx_obj 1 2 3 4 5 6 7 8 9 10 --out NEATM_original_10_1b.txt --model NEATM
+python scripts/calc_D_fittm.py --resdir data/tpmout_control --idx_obj 1 2 3 4 5 6 7 8 9 10 --out NEATM_control_10_1b.txt --model NEATM
 ## NEATM, 2 bands
-python src/calc_D_fittm.py --resdir data/tpmout_original --idx_obj 1 2 3 4 5 6 7 8 9 10 --out NEATM_original_10_2b.txt --model NEATM --fiteta
-python src/calc_D_fittm.py --resdir data/tpmout_control --idx_obj 1 2 3 4 5 6 7 8 9 10 --out NEATM_control_10_2b.txt --model NEATM --fiteta
+python scripts/calc_D_fittm.py --resdir data/tpmout_original --idx_obj 1 2 3 4 5 6 7 8 9 10 --out NEATM_original_10_2b.txt --model NEATM --fiteta
+python scripts/calc_D_fittm.py --resdir data/tpmout_control --idx_obj 1 2 3 4 5 6 7 8 9 10 --out NEATM_control_10_2b.txt --model NEATM --fiteta
 
 # Calculate diameters of 10 objects with FRM
 ## FRM (1 band)
-python src/calc_D_fittm.py --resdir data/tpmout_original --idx_obj 1 2 3 4 5 6 7 8 9 10 --out FRM_original_10_1b.txt --model FRM
-python src/calc_D_fittm.py --resdir data/tpmout_control --idx_obj 1 2 3 4 5 6 7 8 9 10 --out FRM_control_10_1b.txt --model FRM
+python scripts/calc_D_fittm.py --resdir data/tpmout_original --idx_obj 1 2 3 4 5 6 7 8 9 10 --out FRM_original_10_1b.txt --model FRM
+python scripts/calc_D_fittm.py --resdir data/tpmout_control --idx_obj 1 2 3 4 5 6 7 8 9 10 --out FRM_control_10_1b.txt --model FRM
 ## FRM (2 bands, eta is fixed, but the name of option is `fiteta`)
-python src/calc_D_fittm.py --resdir data/tpmout_original --idx_obj 1 2 3 4 5 6 7 8 9 10 --out FRM_original_10_2b.txt --model FRM --fiteta
-python src/calc_D_fittm.py --resdir data/tpmout_control --idx_obj 1 2 3 4 5 6 7 8 9 10 --out FRM_control_10_2b.txt --model FRM --fiteta
+python scripts/calc_D_fittm.py --resdir data/tpmout_original --idx_obj 1 2 3 4 5 6 7 8 9 10 --out FRM_original_10_2b.txt --model FRM --fiteta
+python scripts/calc_D_fittm.py --resdir data/tpmout_control --idx_obj 1 2 3 4 5 6 7 8 9 10 --out FRM_control_10_2b.txt --model FRM --fiteta
 ```
 
 
 ## Plotting figures in the paper (hit the commands in ./, figures are saved in ./fig)
 ```
 # Plot locations of original asteroids and control asteroids (Figure 1.)
-python src/plot_objectslocation.py data/obsfile_original data/obsfile_control --out location_NEOMIR_samples.jpg
+python scripts/plot_objectslocation.py data/obsfile_original data/obsfile_control --out location_NEOMIR_samples.jpg
 ```
 
 ```
 # Plot aspect data of original asteroids and control asteroids (Figure 2.)
-python src/plot_aspect.py data/obsfile_original data/obsfile_control --out aspect_NEOMIR_samples.jpg
+python scripts/plot_aspect.py data/obsfile_original data/obsfile_control --out aspect_NEOMIR_samples.jpg
 ```
 
 ```
 # Plot 8 micron flux map
 ## First one (original, Figure 4.)
-python src/plot_flux_map.py --key_flux flux8 --resdir data/tpmout_original --idx_obj 1 --vmin 20 --vmax 400 --out obj1_flux_original.png
+python scripts/plot_flux_map.py --key_flux flux8 --resdir data/tpmout_original --idx_obj 1 --vmin 20 --vmax 400 --out obj1_flux_original.png
 ## First one (pseudo, Figure 5.)
-python src/plot_flux_map.py --key_flux flux8 --resdir data/tpmout_control  --idx_obj 1 --vmin 20 --vmax 400 --out obj1_flux_control.png
+python scripts/plot_flux_map.py --key_flux flux8 --resdir data/tpmout_control  --idx_obj 1 --vmin 20 --vmax 400 --out obj1_flux_control.png
 ## You can plot all at once with `--all` option (148 objects x 6 TI = 888 files)
 ```
 
 ```
 # Plot 8 aspect data vs. micron flux  (Figure 6.)
-python src/plot_flux_aspect.py --key_flux flux8 --resdir1 data/tpmout_original/ --resdir2 data/tpmout_control --out flux8_vs_aspect.jpg
+python scripts/plot_flux_aspect.py --key_flux flux8 --resdir1 data/tpmout_original/ --resdir2 data/tpmout_control --out flux8_vs_aspect.jpg
 ```
 
 ```
 # Plot estimated diameters (Figures 7–10.)
-python src/plot_diameter.py data/NEATM_original_10_1b.txt data/NEATM_control_10_1b.txt --out NEATM_res_1b.png --ymax 6
-python src/plot_diameter.py data/NEATM_original_10_2b.txt data/NEATM_control_10_2b.txt --out NEATM_res_2b.png --ymax 6
-python src/plot_diameter.py data/FRM_original_10_1b.txt data/FRM_control_10_1b.txt --out FRM_res_1b.png --ymax 6
-python src/plot_diameter.py data/FRM_original_10_2b.txt data/FRM_control_10_2b.txt --out FRM_res_2b.png --ymax 6
+python scripts/plot_diameter.py data/NEATM_original_10_1b.txt data/NEATM_control_10_1b.txt --out NEATM_res_1b.png --ymax 6
+python scripts/plot_diameter.py data/NEATM_original_10_2b.txt data/NEATM_control_10_2b.txt --out NEATM_res_2b.png --ymax 6
+python scripts/plot_diameter.py data/FRM_original_10_1b.txt data/FRM_control_10_1b.txt --out FRM_res_1b.png --ymax 6
+python scripts/plot_diameter.py data/FRM_original_10_2b.txt data/FRM_control_10_2b.txt --out FRM_res_2b.png --ymax 6
 ```
 
 ## Miscellaneous
