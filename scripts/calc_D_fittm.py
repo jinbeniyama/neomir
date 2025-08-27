@@ -155,10 +155,10 @@ if __name__ == "__main__":
     df = calc_aspect(df)
 
     eta = args.eta
-    print("Parameters for NEATM")
+    print("Parameters for NEATM/FRM")
     print(f"  H={H}, eta={eta}")
-    D_NEATM_list = []
-    eta_NEATM_list = []
+    D_model_list = []
+    eta_model_list = []
     df = df.reset_index(drop=True)
 
     for idx, row in df.iterrows():
@@ -188,16 +188,16 @@ if __name__ == "__main__":
         p = subprocess.Popen(cmd, shell=True, preexec_fn=os.setsid, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
         comm = p.communicate()
         res = comm[0].decode("ascii").split()
-        D_NEATM = float(res[1])
-        eta_NEATM = float(res[5])
+        D_model = float(res[1])
+        eta_model = float(res[5])
         # Diameter in km
-        D_NEATM_list.append(D_NEATM)
-        eta_NEATM_list.append(eta_NEATM)
+        D_model_list.append(D_model)
+        eta_model_list.append(eta_model)
 
-    df["D_NEATM"] = D_NEATM_list
+    df["D_model"] = D_model_list
     df["D_true"] = D_true
     df["model"] = args.model
-    df["eta"] = eta_NEATM_list
+    df["eta"] = eta_model_list
     df["etafit"] = etafit
 
     # Save results in a new file
