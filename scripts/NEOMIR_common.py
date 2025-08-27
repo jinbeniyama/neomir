@@ -10,28 +10,30 @@ mycolor = [
     "#89c3eb", "#ec6800", "cyan", "gold", "magenta"]
 
 
-def handle_tpmres(resdir):
+def handle_tpmres(resdir, key_flux):
     filenames = [f.name for f in os.scandir(resdir)]
     df_list = []
     for idx_obj, fi in enumerate(filenames):
         filename = os.path.join(resdir, fi)
         # Extract TI from TI300_res_141.txt
         TI = int(fi.split("_")[0][2:])
-        data = np.loadtxt(filename)
+        df = pd.read_csv(filename, sep=" ")
 
-        # Extract columns: lon, lat, flux5, flux8,  x1, y1, z1, x2, y2, z2
-        lon, lat, flux5, flux8 = data[:, 2], data[:, 3], data[:, 4], data[:, 5]
-        x1, y1, z1     = data[:, 6], data[:, 7], data[:, 8]
-        x2, y2, z2     = data[:, 9], data[:, 10], data[:, 11]
+        lon = df["lam"]
+        lat = df["beta"]
+        flux = df[key_flux]
+
+        # These are common
+        x1, y1, z1 = df["x1"], df["y1"], df["z1"]
+        x2, y2, z2 = df["x2"], df["y2"], df["z2"]
 
         # Since we used asteroids with diameters of 1 km in TPM to avoid the loss of digits,
         # we have to slace fluxes here.
         # From 1 km to 42 m (H=25, pv=0.1)
         sf = (42./1000.)**2
-        flux5, flux8 = flux5*sf, flux8*sf
 
         df = pd.DataFrame(dict(
-            lon=lon, lat=lat, flux5=flux5, flux8=flux8,
+            lon=lon, lat=lat, flux=flux,
             X=x1, Y=y1, Z=z1, MirX=x2, MirY=y2, MirZ=z2
             ))
         df["TI"] = TI

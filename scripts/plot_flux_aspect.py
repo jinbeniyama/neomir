@@ -15,6 +15,9 @@ if __name__ == "__main__":
         "--idx_obj", type=int, nargs="*", default=[1],
         help="Index of objects to be plotted")
     parser.add_argument(
+        "--key_flux", type=str, default="flux8",
+        help="Keyword to specify flux")
+    parser.add_argument(
         "--resdir1", type=str, default="tpmresult",
         help="Directory with output files")
     parser.add_argument(
@@ -24,7 +27,7 @@ if __name__ == "__main__":
         "--outdir", type=str, default="fig",
         help="Directory for output file")
     parser.add_argument(
-        "--out", type=str, default="8flux_aspect.png",
+        "--out", type=str, default="flux_vs_aspect.png",
         help="Output file")
     args = parser.parse_args()
 
@@ -34,14 +37,14 @@ if __name__ == "__main__":
     os.makedirs(outdir, exist_ok=True)
 
     Gamma_values = [0, 50, 150, 300, 500, 1000]
-    key_flux = "flux8"
+    key_flux = args.key_flux
     # Font size
     fs = 14
     
     # Read original objects
-    df1 = handle_tpmres(resdir1)
+    df1 = handle_tpmres(resdir1, key_flux)
     # Read control objects
-    df2 = handle_tpmres(resdir2)
+    df2 = handle_tpmres(resdir2, key_flux)
     # Merge
     df = pd.concat([df1, df2])
 
@@ -70,20 +73,20 @@ if __name__ == "__main__":
         label = f"{TI} tiu"
 
         ax_a.scatter(
-            df_TI["alpha"], df_TI[key_flux], label=label, color=mycolor[idx_TI], s=15, marker="o", fc="None", zorder=zorder)
+            df_TI["alpha"], df_TI["flux"], label=label, color=mycolor[idx_TI], s=15, marker="o", fc="None", zorder=zorder)
         ax_r.scatter(
-            df_TI["r"], df_TI[key_flux], label=label, color=mycolor[idx_TI], s=15, marker="o", fc="None", zorder=zorder)
+            df_TI["r"], df_TI["flux"], label=label, color=mycolor[idx_TI], s=15, marker="o", fc="None", zorder=zorder)
         ax_d.scatter(
-            df_TI["delta"], df_TI[key_flux], label=label, color=mycolor[idx_TI], s=15, marker="o", fc="None", zorder=zorder)
+            df_TI["delta"], df_TI["flux"], label=label, color=mycolor[idx_TI], s=15, marker="o", fc="None", zorder=zorder)
 
         # Normalize the flux with delta
         # We cannot correct the effect of r, which affects the temperature dist.
-        df_TI[key_flux] = df_TI[key_flux]*df_TI["delta"]*df_TI["delta"]
+        df_TI[key_flux] = df_TI["flux"]*df_TI["delta"]*df_TI["delta"]
 
         ax_a2.scatter(
-            df_TI["alpha"], df_TI[key_flux], label=label, color=mycolor[idx_TI], s=15, marker="o", fc="None", zorder=zorder)
+            df_TI["alpha"], df_TI["flux"], label=label, color=mycolor[idx_TI], s=15, marker="o", fc="None", zorder=zorder)
         ax_r2.scatter(
-            df_TI["r"], df_TI[key_flux], label=label, color=mycolor[idx_TI], s=15, marker="o", fc="None", zorder=zorder)
+            df_TI["r"], df_TI["flux"], label=label, color=mycolor[idx_TI], s=15, marker="o", fc="None", zorder=zorder)
         ax_d2.scatter(
             df_TI["delta"], df_TI[key_flux], label=label, color=mycolor[idx_TI], s=15, marker="o", fc="None", zorder=zorder)
      

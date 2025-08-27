@@ -1,3 +1,24 @@
 work
 fig
 jnote
+
+# This file is provided by a collaborator
+data/position.txt
+
+# These are output files by running scripts in the repository
+data/spinfile
+
+data/obsfile_original
+data/ephemfile_original
+data/obsfile_control
+data/ephemfile_control
+
+data/FRM_control_10_1b.txt
+data/FRM_control_10_2b.txt
+data/FRM_original_10_1b.txt
+data/FRM_original_10_2b.txt
+data/NEATM_control_10_1b.txt
+data/NEATM_control_10_2b.txt
+data/NEATM_original_10_1b.txt
+data/NEATM_original_10_2b.txt
+

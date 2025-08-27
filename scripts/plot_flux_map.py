@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Plot 8 micron flux!
+"""Plot flux map!
 """
 from argparse import ArgumentParser as ap
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
 import os
 from scipy.interpolate import griddata
@@ -15,6 +15,9 @@ if __name__ == "__main__":
     parser.add_argument(
         "--idx_obj", type=int, nargs="*", default=[1],
         help="Index of objects to be plotted")
+    parser.add_argument(
+        "--key_flux", type=str, default="flux8",
+        help="Keyword to specify flux")
     parser.add_argument(
         "--all", action="store_true", default=False,
         help="Try to plot all resuls")
@@ -34,7 +37,7 @@ if __name__ == "__main__":
         "--out", type=str, default=None,
         help="Output filename (only for N(idx_obj)==1)")
     parser.add_argument(
-        "--outdir", type=str, default="plot",
+        "--outdir", type=str, default="fig",
         help="Directory for output file")
     args = parser.parse_args()
 
@@ -45,6 +48,7 @@ if __name__ == "__main__":
     Gamma_values = [0, 50, 150, 300, 500, 1000]
     vmin, vmax = args.vmin, args.vmax
     cmap = args.cmap
+    key_flux = args.key_flux
     
     if args.all:
         # Try to find object id
@@ -92,19 +96,20 @@ if __name__ == "__main__":
         for idx, Gamma in enumerate(Gamma_values):
             filename = f"TI{Gamma}_res_{idx_obj:03d}.txt"  # Load the corresponding Gamma file
             filename = os.path.join(resdir, filename)
-            data = np.loadtxt(filename)
+            df = pd.read_csv(filename, sep=" ")
+            lon = df["lam"]
+            lat = df["beta"]
+            flux = df[key_flux]
         
-            # Extract columns: lon, lat, flux
-            lon, lat, flux5, flux8 = data[:, 2], data[:, 3], data[:, 4], data[:, 5]
             # Since we used asteroids with diameters of 1 km in TPM to avoid the loss of digits,
             # we have to slace fluxes here.
             # From 1 km to 42 m (H=25, pv=0.1)
             sf = (42./1000.)**2
-            flux5, flux8 = flux5*sf, flux8*sf
+            flux = flux*sf
 
             # These are common
-            x1, y1, z1     = data[:, 6][0], data[:, 7][0], data[:, 8][0]
-            x2, y2, z2     = data[:, 9][0], data[:, 10][0], data[:, 11][0]
+            x1, y1, z1 = df["x1"], df["y1"], df["z1"]
+            x2, y2, z2 = df["x2"], df["y2"], df["z2"]
 
             # Calculate alpha, r, delta
             S = np.array([x1, y1, z1]).T
@@ -113,8 +118,9 @@ if __name__ == "__main__":
             delta = np.sqrt(np.sum(O**2))
             SO = S*O
             alpha = np.arccos(np.sum(SO)/r/delta)*180/np.pi
-            print(f"  r, delta, alpha = {r:.2f}, {delta:.2f}, {alpha:.2f}")
-            print(f"Gamma {Gamma}: min={np.min(flux8)}, max={np.max(flux8)}, median={np.median(flux8)}, std={np.std(flux8)}")
+            if idx == 0:
+                print(f"  r, delta, alpha = {r:.2f}, {delta:.2f}, {alpha:.2f}")
+            print(f"  Fluxes ({key_flux}) [microJy] when thermal inertia = {Gamma:04d}: min={np.min(flux):.2f}, max={np.max(flux):.2f}, median={np.median(flux):.2f}, std={np.std(flux):.2f}")
             
                     
             info = r"(r, $\Delta$, $\alpha$) = " + f"({r:.2f} au, {delta:.2f} au, {alpha:.2f} deg)"
@@ -122,7 +128,7 @@ if __name__ == "__main__":
             fig.suptitle(info, fontsize=20)
         
             # Interpolate scattered data to grid
-            flux_grid = griddata((lon, lat), flux8, (lon_mesh, lat_mesh), method='cubic')
+            flux_grid = griddata((lon, lat), flux, (lon_mesh, lat_mesh), method='cubic')
         
             # Plot in the correct subplot (3x2 grid)
             ax = axs[idx] 
@@ -142,7 +148,7 @@ if __name__ == "__main__":
             ax.set_ylim([-90, 90])
             ax.set_title(r"$\Gamma$" + f" = {Gamma} tiu", fontsize=14)
             if (Gamma>0):
-                allFluxes.extend(flux8)
+                allFluxes.extend(flux)
         
         # Useless?
         #allFluxes = np.sort(allFluxes)
