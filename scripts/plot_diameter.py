@@ -9,6 +9,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import os
 import matplotlib.ticker as ticker
+from matplotlib.ticker import FuncFormatter
 
 from NEOMIR_common import mycolor, Gamma_values
 
@@ -78,12 +79,27 @@ if __name__ == "__main__":
         ax_d.scatter(
             df_TI["delta"], df_TI["Dr"], label=label, color=mycolor[idx_TI], s=5, marker="o", fc="None", zorder=zorder)
 
-    yticks = np.arange(0, 7, 1.0)
     for ax in [ax_a, ax_r, ax_d]:
         ax.legend(fontsize=8)
-        ax.yaxis.set_major_locator(ticker.FixedLocator(yticks))
         if args.ymax:
+            yticks = np.arange(0, 7, 1.0)
+            ax.yaxis.set_major_locator(ticker.FixedLocator(yticks))
             ax.set_ylim([0, args.ymax])
+        else:
+            ax.set_ylim([0.3, 5.5])
+            ax.set_yscale("log")
+
+            label_map = {0.3: "30%", 0.5: "50%", 1: "100%", 2: "200%", 3: "300%", 4: "400%", 5: "500%"}
+            label_map = {0.3: 0.3,  0.5: 0.5, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5}
+            
+            ax.yaxis.set_major_formatter(FuncFormatter(lambda y, _: label_map.get(y, "")))
+            
+            ax.yaxis.set_minor_formatter(FuncFormatter(lambda y, _: label_map.get(y, "")))
+            
+            ax.tick_params(axis='y', which='major', length=6, width=1)
+            ax.tick_params(axis='y', which='minor', length=3, width=1, labelsize=10)
+
+
     out = os.path.join(outdir, args.out)
     plt.savefig(out)
     plt.close()
