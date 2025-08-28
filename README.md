@@ -47,6 +47,14 @@ python scripts/calc_D_fittm.py --resdir data/tpmout_control --idx_obj 1 2 3 4 5 
 python scripts/calc_D_fittm.py --resdir data/tpmout_original --idx_obj 1 2 3 4 5 6 7 8 9 10 --out NEATM_original_10_2b.txt --model NEATM --fiteta
 python scripts/calc_D_fittm.py --resdir data/tpmout_control --idx_obj 1 2 3 4 5 6 7 8 9 10 --out NEATM_control_10_2b.txt --model NEATM --fiteta
 
+# Calculate diameters of all objects with NEATM 
+## NEATM, 1 band
+python scripts/calc_D_fittm.py --resdir data/tpmout_original --all --out NEATM_original_all_1b.txt --model NEATM
+python scripts/calc_D_fittm.py --resdir data/tpmout_control --all --out NEATM_control_all_1b.txt --model NEATM
+## NEATM, 2 bands
+python scripts/calc_D_fittm.py --resdir data/tpmout_original --idx_obj 1 2 3 4 5 6 7 8 9 10 --out NEATM_original_10_2b.txt --model NEATM --fiteta
+python scripts/calc_D_fittm.py --resdir data/tpmout_control --idx_obj 1 2 3 4 5 6 7 8 9 10 --out NEATM_control_10_2b.txt --model NEATM --fiteta
+
 # Calculate diameters of 10 objects with FRM
 ## FRM (1 band)
 python scripts/calc_D_fittm.py --resdir data/tpmout_original --idx_obj 1 2 3 4 5 6 7 8 9 10 --out FRM_original_10_1b.txt --model FRM
@@ -95,6 +103,9 @@ python scripts/plot_diameter.py data/FRM_original_10_2b.txt data/FRM_control_10_
 # Check spin pole distributions of our samples
 # Check flux, prograde, retrograde, TI
 plot_tpmres_stat.py --resdir1 tpmresult_2bands --resdir2 tpmresult_2bands_pseudo --outdir plot 
+
+# Check results of FRM (1 band)
+# -> check_FRM_result.ipynb
 ```
 
 ## Dependencies
