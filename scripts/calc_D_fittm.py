@@ -72,10 +72,31 @@ def calc_aspect(df):
     normaO = np.sqrt(np.sum(O**2, axis=1))
     SO = S*O
     pha = np.arccos(np.sum(SO, axis=1)/normaO/normaS)*180/np.pi
-   
+
+    # aspect angle (angle between north spin pole vector and asteroid-observer vector)
+    # Convert to radian
+    lon_rad = np.radians(df['lon'].values)
+    lat_rad = np.radians(df['lat'].values)
+    
+    # Unit vector to north pole
+    axis_vec = np.column_stack([
+        np.cos(lat_rad) * np.cos(lon_rad),
+        np.cos(lat_rad) * np.sin(lon_rad),
+        np.sin(lat_rad)
+    ])
+    
+    # Unit vector to observer
+    obs_unit = O / normaO[:, None]
+    
+    # aspect angle
+    dot = np.sum(axis_vec * obs_unit, axis=1)
+    dot = np.clip(dot, -1, 1)  
+    aspect_deg = np.degrees(np.arccos(dot))
+
     df["r"] = normaS
     df["delta"] = normaO
     df["alpha"] = pha
+    df["aspect_deg"] = aspect_deg
     return df
 
 
