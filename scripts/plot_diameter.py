@@ -29,6 +29,9 @@ if __name__ == "__main__":
         "--ymax", type=float, default=0,
         help="Maxmimum y")
     parser.add_argument(
+        "--chi2_max", type=float, default=1000,
+        help="Maxmimum chi2")
+    parser.add_argument(
         "--outdir", type=str, default="fig",
         help="Directory for output file")
     args = parser.parse_args()
@@ -44,10 +47,28 @@ if __name__ == "__main__":
 
     df = pd.concat(df_list)
 
+    # Remove by chi2
+    print("Remove results with large chi2")
+    try:
+        N0 = len(df)
+        df = df[df["chi2"] < args.chi2_max]
+        N1 = len(df)
+        print(f"  {N0-N1} results with chi2 > {args.chi2_max} are removed")
+    except:
+        print("  Failed......")
+    print()
+
     model = list(set(df["model"]))[0]
 
     # Diameter ratio
     df["Dr"] = df["D_model"]/df["D_true"]
+    Dr_min = df["Dr"].min()
+    Dr_max = df["Dr"].max()
+    print("Dratio (D_model/D_true) range")
+    print(f"  {Dr_min:.3f}--{Dr_max:.3f}")
+    print("")
+
+
 
     # Plot
     fig = plt.figure(figsize=(12, 4))
