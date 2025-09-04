@@ -18,10 +18,13 @@ if __name__ == "__main__":
     parser = ap(description="Plot TPM results for NEOMIR.")
     parser.add_argument(
         "obsdir1", type=str,
-        help="Directory with output files")
+        help="Directory with output files (original)")
     parser.add_argument(
         "obsdir2", type=str,
-        help="Directory with output files")
+        help="Directory with output files (control)")
+    parser.add_argument(
+        "--objid", type=int, default=None,
+        help="Objid of interst")
     parser.add_argument(
         "--out", type=str, default="loc.jpg",
         help="Output filename")
@@ -94,7 +97,6 @@ if __name__ == "__main__":
     df2["y"] = -df2["Y"]
     df2["z"] = -df2["Z"]
 
-
     out = args.out
     out = os.path.join(args.outdir, out)
 
@@ -126,6 +128,16 @@ if __name__ == "__main__":
         ax.scatter(
             row["x"], row["y"], color=col, lw=1, ls="solid", 
             label=lab, zorder=-1, s=si, marker=mark, facecolor="None")
+        if args.objid is not None:
+            df1_interest = df1[df1["objid"] == args.objid]
+            col = mycolor[0]
+            mark = "*"
+            si = 400
+            lw = 2
+            ax.scatter(
+                df1_interest["x"], df1_interest["y"], color=col, lw=lw, ls="solid", 
+                zorder=1000, s=si, marker=mark, edgecolor="black")
+
     # Control
     for idx, row in df2.iterrows():
         col = mycolor[1]
@@ -135,7 +147,19 @@ if __name__ == "__main__":
             lab = f"Control asteroids N={len(df2)}\n(Symmetric with respect to the NEOMIR)"
         else:
             lab = None
-        ax.scatter(row["x"], row["y"], color=col, lw=1, ls="solid", label=lab, zorder=-1, s=si, marker=mark)
+        ax.scatter(
+            row["x"], row["y"], color=col, lw=1, ls="solid", 
+            label=lab, zorder=-1, s=si, marker=mark)
+
+        if args.objid is not None:
+            df2_interest = df2[df2["objid"] == args.objid]
+            col = mycolor[1]
+            mark = "*"
+            si = 400
+            lw = 2
+            ax.scatter(
+                df2_interest["x"], df2_interest["y"], color=col, lw=lw, ls="solid", 
+                zorder=1000, s=si, marker=mark, edgecolor="black")
 
     # Earth
     t0 = "2024-08-14"
