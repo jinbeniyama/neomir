@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """Plot flux map!
+
+Note that idx_obj == 1 is the first object (i.e., 43176445 in position.txt, objid==0 in FRM_control_10_1b.txt etc.)
 """
 from argparse import ArgumentParser as ap
 import numpy as np
