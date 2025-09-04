@@ -8,8 +8,10 @@ from multiprocessing import Manager
 
 
 def run_simulation(i, rotP_hr, lam, beta, Gamma, obs, eph, obj, spindir, label):
-
-    spinf = f"spin{i:03d}_TI{Gamma}_{label}.txt"
+    
+    # This is independent on TI and objid,
+    # and depending on lam and beta (thus index, i).
+    spinf = f"spin{i:03d}.txt"
     with open(f'{spindir}/{spinf}', 'wt') as f:
         print(lam, beta, rotP_hr, 0, 0, file=f)
     
