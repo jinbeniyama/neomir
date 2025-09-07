@@ -116,6 +116,9 @@ plot_tpmres_stat.py --resdir1 tpmresult_2bands --resdir2 tpmresult_2bands_pseudo
 
 # Check results of FRM (1 band, useless?)
 # -> check_FRM_result.ipynb
+# Plot SED
+python scripts/plot_SED.py --resdir data/tpmout_original --idx_obj 1 --out fig/obj1_SED_TI0_original.png --TI 0 --yr 10 1000
+python scripts/plot_SED.py --resdir data/tpmout_control --idx_obj 1 --out fig/obj1_SED_TI0_control.png --TI 0 --yr 10 1000
 ```
 
 ## Dependencies
