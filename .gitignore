@@ -24,4 +24,5 @@ data/temp
 #data/NEATM_control_10_2b.txt
 #data/NEATM_original_10_1b.txt
 #data/NEATM_original_10_2b.txt
-
+.DS_Store
+venv
