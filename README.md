@@ -106,6 +106,10 @@ python scripts/plot_diameter.py data/NEATM_original_all_1b.txt data/NEATM_contro
 python scripts/plot_diameter.py data/NEATM_original_all_2b.txt data/NEATM_control_all_2b.txt --out NEATM_res_2b.png --outeta NEATM_eta_2b.png
 python scripts/plot_diameter.py data/FRM_original_all_1b.txt data/FRM_control_all_1b.txt --out FRM_res_1b.png 
 python scripts/plot_diameter.py data/FRM_original_all_2b.txt data/FRM_control_all_2b.txt --out FRM_res_2b.png 
+# Only small thermal inertia
+python scripts/plot_diameter.py data/FRM_original_all_2b.txt data/FRM_control_all_2b.txt --out FRM_res_TI50_2b.png --TI_list 50
+# Only large thermal inertia
+python scripts/plot_diameter.py data/FRM_original_all_2b.txt data/FRM_control_all_2b.txt --out FRM_res_TI1000_2b.png --TI_list 1000
 ```
 
 ## Miscellaneous
