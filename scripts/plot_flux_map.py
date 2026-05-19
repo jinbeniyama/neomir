@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """Plot flux map!
+
+Note that idx_obj == 1 is the first object (i.e., 43176445 in position.txt, objid==0 in FRM_control_10_1b.txt etc.)
 """
 from argparse import ArgumentParser as ap
 import numpy as np
@@ -108,8 +110,9 @@ if __name__ == "__main__":
             flux = flux*sf
 
             # These are common
-            x1, y1, z1 = df["x1"], df["y1"], df["z1"]
-            x2, y2, z2 = df["x2"], df["y2"], df["z2"]
+            assert len(set(df["x1"])) == 1, "Check the code."
+            x1, y1, z1 = df["x1"].values[0], df["y1"].values[0], df["z1"].values[0]
+            x2, y2, z2 = df["x2"].values[0], df["y2"].values[0], df["z2"].values[0]
 
             # Calculate alpha, r, delta
             S = np.array([x1, y1, z1]).T

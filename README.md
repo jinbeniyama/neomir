@@ -13,6 +13,21 @@ Data and codes for thermal modeling of minor bodies in preparation for NEOMIR (D
 * `tpmout_original` (directory with output of TPMs of original objects)
 * `tpmout_control` (directory with output of TPMs of control objects)
 
+## Set up
+- Make `requirements.txt`:
+```
+pipreqs . --force 
+```
+Some versions are changed by hand.
+
+- Create vertual environment:
+```
+python3.11 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
+
+
 ## TPM (hit the commands in ./)
 - Make observations and ephemerides files for original objects
 ```
@@ -47,6 +62,15 @@ python scripts/calc_D_fittm.py --resdir data/tpmout_control --idx_obj 1 2 3 4 5 
 python scripts/calc_D_fittm.py --resdir data/tpmout_original --idx_obj 1 2 3 4 5 6 7 8 9 10 --out NEATM_original_10_2b.txt --model NEATM --fiteta
 python scripts/calc_D_fittm.py --resdir data/tpmout_control --idx_obj 1 2 3 4 5 6 7 8 9 10 --out NEATM_control_10_2b.txt --model NEATM --fiteta
 
+# Calculate diameters of all objects with NEATM (it takes ~10 hr each)
+## NEATM, 1 band
+python3 scripts/calc_D_fittm.py --resdir data/tpmout_original --all --out NEATM_original_all_1b.txt --model NEATM
+python3 scripts/calc_D_fittm.py --resdir data/tpmout_control --all --out NEATM_control_all_1b.txt --model NEATM
+## NEATM, 2 bands
+python scripts/calc_D_fittm.py --resdir data/tpmout_original --all --out NEATM_original_all_2b.txt --model NEATM --fiteta
+python scripts/calc_D_fittm.py --resdir data/tpmout_control --all --out NEATM_control_all_2b.txt --model NEATM --fiteta
+
+
 # Calculate diameters of 10 objects with FRM
 ## FRM (1 band)
 python scripts/calc_D_fittm.py --resdir data/tpmout_original --idx_obj 1 2 3 4 5 6 7 8 9 10 --out FRM_original_10_1b.txt --model FRM
@@ -54,8 +78,17 @@ python scripts/calc_D_fittm.py --resdir data/tpmout_control --idx_obj 1 2 3 4 5 
 ## FRM (2 bands, eta is fixed, but the name of option is `fiteta`)
 python scripts/calc_D_fittm.py --resdir data/tpmout_original --idx_obj 1 2 3 4 5 6 7 8 9 10 --out FRM_original_10_2b.txt --model FRM --fiteta
 python scripts/calc_D_fittm.py --resdir data/tpmout_control --idx_obj 1 2 3 4 5 6 7 8 9 10 --out FRM_control_10_2b.txt --model FRM --fiteta
-```
 
+
+# Calculate diameters of all objects with FRM (it takes ~10 hr each)
+# "Original" takes forever......?
+## FRM (1 band)
+python scripts/calc_D_fittm.py --resdir data/tpmout_original --all --out FRM_original_all_1b.txt --model FRM
+python scripts/calc_D_fittm.py --resdir data/tpmout_control --all --out FRM_control_all_1b.txt --model FRM
+## FRM (2 bands, eta is fixed, but the name of option is `fiteta`)
+python scripts/calc_D_fittm.py --resdir data/tpmout_original --all --out FRM_original_all_2b.txt --model FRM --fiteta
+python scripts/calc_D_fittm.py --resdir data/tpmout_control --all --out FRM_control_all_2b.txt --model FRM --fiteta
+```
 
 ## Plotting figures in the paper (hit the commands in ./, figures are saved in ./fig)
 ```
@@ -84,10 +117,14 @@ python scripts/plot_flux_aspect.py --key_flux flux8 --resdir1 data/tpmout_origin
 
 ```
 # Plot estimated diameters (Figures 7–10.)
-python scripts/plot_diameter.py data/NEATM_original_10_1b.txt data/NEATM_control_10_1b.txt --out NEATM_res_1b.png --ymax 6
-python scripts/plot_diameter.py data/NEATM_original_10_2b.txt data/NEATM_control_10_2b.txt --out NEATM_res_2b.png --ymax 6
-python scripts/plot_diameter.py data/FRM_original_10_1b.txt data/FRM_control_10_1b.txt --out FRM_res_1b.png --ymax 6
-python scripts/plot_diameter.py data/FRM_original_10_2b.txt data/FRM_control_10_2b.txt --out FRM_res_2b.png --ymax 6
+python scripts/plot_diameter.py data/NEATM_original_all_1b.txt data/NEATM_control_all_1b.txt --out NEATM_res_1b.png --outeta NEATM_eta_1b.png
+python scripts/plot_diameter.py data/NEATM_original_all_2b.txt data/NEATM_control_all_2b.txt --out NEATM_res_2b.png --outeta NEATM_eta_2b.png
+python scripts/plot_diameter.py data/FRM_original_all_1b.txt data/FRM_control_all_1b.txt --out FRM_res_1b.png 
+python scripts/plot_diameter.py data/FRM_original_all_2b.txt data/FRM_control_all_2b.txt --out FRM_res_2b.png 
+# Only small thermal inertia
+python scripts/plot_diameter.py data/FRM_original_all_2b.txt data/FRM_control_all_2b.txt --out FRM_res_TI50_2b.png --TI_list 50
+# Only large thermal inertia
+python scripts/plot_diameter.py data/FRM_original_all_2b.txt data/FRM_control_all_2b.txt --out FRM_res_TI1000_2b.png --TI_list 1000
 ```
 
 ## Miscellaneous
@@ -95,6 +132,12 @@ python scripts/plot_diameter.py data/FRM_original_10_2b.txt data/FRM_control_10_
 # Check spin pole distributions of our samples
 # Check flux, prograde, retrograde, TI
 plot_tpmres_stat.py --resdir1 tpmresult_2bands --resdir2 tpmresult_2bands_pseudo --outdir plot 
+
+# Check results of FRM (1 band, useless?)
+# -> check_FRM_result.ipynb
+# Plot SED
+python scripts/plot_SED.py --resdir data/tpmout_original --idx_obj 1 --out fig/obj1_SED_TI0_original.png --TI 0 --yr 10 1000
+python scripts/plot_SED.py --resdir data/tpmout_control --idx_obj 1 --out fig/obj1_SED_TI0_control.png --TI 0 --yr 10 1000
 ```
 
 ## Dependencies

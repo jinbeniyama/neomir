@@ -72,10 +72,31 @@ def calc_aspect(df):
     normaO = np.sqrt(np.sum(O**2, axis=1))
     SO = S*O
     pha = np.arccos(np.sum(SO, axis=1)/normaO/normaS)*180/np.pi
-   
+
+    # aspect angle (angle between north spin pole vector and asteroid-observer vector)
+    # Convert to radian
+    lon_rad = np.radians(df['lon'].values)
+    lat_rad = np.radians(df['lat'].values)
+    
+    # Unit vector to north pole
+    axis_vec = np.column_stack([
+        np.cos(lat_rad) * np.cos(lon_rad),
+        np.cos(lat_rad) * np.sin(lon_rad),
+        np.sin(lat_rad)
+    ])
+    
+    # Unit vector to observer
+    obs_unit = O / normaO[:, None]
+    
+    # aspect angle
+    dot = np.sum(axis_vec * obs_unit, axis=1)
+    dot = np.clip(dot, -1, 1)  
+    aspect_deg = np.degrees(np.arccos(dot))
+
     df["r"] = normaS
     df["delta"] = normaO
     df["alpha"] = pha
+    df["aspect_deg"] = aspect_deg
     return df
 
 
@@ -156,11 +177,18 @@ if __name__ == "__main__":
     # Calculate alpha, r, and delta
     df = calc_aspect(df)
 
+    # Round
+    # 0.0001 au = 15000.0 km
+    df["r"] = df["r"].round(5)
+    df["delta"] = df["delta"].round(5)
+
+
     eta = args.eta
     print("Parameters for NEATM/FRM")
     print(f"  H={H}, eta={eta}")
     D_model_list = []
     eta_model_list = []
+    chi2_list = []
     df = df.reset_index(drop=True)
 
     for idx, row in df.iterrows():
@@ -169,8 +197,13 @@ if __name__ == "__main__":
         # Convert micronJy to Jy
         flux5 = row[key_flux5]*1e-6
         flux8 = row[key_flux8]*1e-6
-        fluxerr5 = flux5*0.1
-        fluxerr8 = flux8*0.1
+        # Sometimes not converge with large error
+        # Note: Converge
+        #       echo 18.118 0.15 0.9 1.0 0.1 0.83864 0.20183 129 5.0 0.00125 0.000125 8.0 0.0123 0.00123 | fittm -m 0
+        #       Does not converge
+        #       echo 18.118 0.15 0.9 1.0 0.1 0.83864 0.20183 129.1 5.0 0.00125 0.000125 8.0 0.0123 0.00123 | fittm -m 0
+        fluxerr5 = flux5*0.01
+        fluxerr8 = flux8*0.01
         lon   = row["lon"]
         lat   = row["lat"]
         r     = row["r"]
@@ -192,15 +225,18 @@ if __name__ == "__main__":
         res = comm[0].decode("ascii").split()
         D_model = float(res[1])
         eta_model = float(res[5])
+        chi2 = float(res[7])
         # Diameter in km
         D_model_list.append(D_model)
         eta_model_list.append(eta_model)
+        chi2_list.append(chi2)
 
     df["D_model"] = D_model_list
     df["D_true"] = D_true
     df["model"] = args.model
     df["eta"] = eta_model_list
     df["etafit"] = etafit
+    df["chi2"] = chi2_list
 
     # Save results in a new file
     out = args.out

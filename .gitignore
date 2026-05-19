@@ -13,12 +13,16 @@ data/ephemfile_original
 data/obsfile_control
 data/ephemfile_control
 
-data/FRM_control_10_1b.txt
-data/FRM_control_10_2b.txt
-data/FRM_original_10_1b.txt
-data/FRM_original_10_2b.txt
-data/NEATM_control_10_1b.txt
-data/NEATM_control_10_2b.txt
-data/NEATM_original_10_1b.txt
-data/NEATM_original_10_2b.txt
+# temporal, old results
+data/temp
 
+#data/FRM_control_10_1b.txt
+#data/FRM_control_10_2b.txt
+#data/FRM_original_10_1b.txt
+#data/FRM_original_10_2b.txt
+#data/NEATM_control_10_1b.txt
+#data/NEATM_control_10_2b.txt
+#data/NEATM_original_10_1b.txt
+#data/NEATM_original_10_2b.txt
+.DS_Store
+venv
