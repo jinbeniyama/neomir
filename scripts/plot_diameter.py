@@ -26,6 +26,9 @@ if __name__ == "__main__":
         "--outeta", type=str, default="eta.png",
         help="Directory for output file (beaming parameter)")
     parser.add_argument(
+        "--TI_list", type=float, nargs="*", default=None,
+        help="List of thermal inertia")
+    parser.add_argument(
         "--ymax", type=float, default=0,
         help="Maxmimum y")
     parser.add_argument(
@@ -67,8 +70,11 @@ if __name__ == "__main__":
     print("Dratio (D_model/D_true) range")
     print(f"  {Dr_min:.3f}--{Dr_max:.3f}")
     print("")
-
-
+    
+    if args.TI_list is not None:
+        TI_list = args.TI_list
+    else:
+        TI_list = Gamma_values
 
     # Plot
     fig = plt.figure(figsize=(12, 4))
@@ -81,7 +87,7 @@ if __name__ == "__main__":
     ax_d.set_xlabel("NEOMIR-centric distance [au]", fontsize=12)
     ax_a.set_ylabel(r"$D_{" + model + r"}/D_{true}$", fontsize=12)
 
-    for idx_TI, TI in enumerate(Gamma_values):
+    for idx_TI, TI in enumerate(TI_list):
         df_TI = df[df["TI"] == TI]
         df_negative_D = df_TI[df_TI["Dr"] < 0] 
         Nall = len(df_TI)
@@ -141,7 +147,7 @@ if __name__ == "__main__":
         bins = np.arange(eta_min, eta_max + 0.1, 0.1)
         print(f"Global eta range: {eta_min}--{eta_max}")
 
-        for idx_TI, TI in enumerate(Gamma_values):
+        for idx_TI, TI in enumerate(TI_list):
             df_TI = df[df["TI"] == TI]
             eta_min_ti = np.floor(df_TI["eta"].min())
             eta_max_ti = np.ceil(df_TI["eta"].max())
