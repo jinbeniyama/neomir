@@ -26,3 +26,4 @@ data/temp
 #data/NEATM_original_10_2b.txt
 .DS_Store
 venv
+__pycache__
