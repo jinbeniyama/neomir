@@ -13,6 +13,21 @@ Data and codes for thermal modeling of minor bodies in preparation for NEOMIR (D
 * `tpmout_original` (directory with output of TPMs of original objects)
 * `tpmout_control` (directory with output of TPMs of control objects)
 
+## Set up
+- Make `requirements.txt`:
+```
+pipreqs . --force 
+```
+Some versions are changed by hand.
+
+- Create vertual environment:
+```
+python3.11 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
+
+
 ## TPM (hit the commands in ./)
 - Make observations and ephemerides files for original objects
 ```
