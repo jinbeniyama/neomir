@@ -93,26 +93,26 @@ python scripts/calc_D_fittm.py --resdir data/tpmout_control --all --out FRM_cont
 ## Plotting figures in the paper (hit the commands in ./, figures are saved in ./fig)
 ```
 # Plot locations of original asteroids and control asteroids (Figure 1.)
-python scripts/plot_objectslocation.py data/obsfile_original data/obsfile_control --out location_NEOMIR_samples.jpg
+python scripts/plot_objectslocation.py data/obsfile_original data/obsfile_control --out location_NEOMIR_samples.pdf
 ```
 
 ```
 # Plot aspect data of original asteroids and control asteroids (Figure 2.)
-python scripts/plot_aspect.py data/obsfile_original data/obsfile_control --out aspect_NEOMIR_samples.jpg
+python scripts/plot_aspect.py data/obsfile_original data/obsfile_control --out aspect_NEOMIR_samples.pdf
 ```
 
 ```
 # Plot 8 micron flux map
 ## First one (original, Figure 4.)
-python scripts/plot_flux_map.py --key_flux flux8 --resdir data/tpmout_original --idx_obj 1 --vmin 20 --vmax 400 --out obj1_flux_original.png
+python scripts/plot_flux_map.py --key_flux flux8 --resdir data/tpmout_original --idx_obj 1 --vmin 20 --vmax 400 --out obj1_flux_original.pdf
 ## First one (pseudo, Figure 5.)
-python scripts/plot_flux_map.py --key_flux flux8 --resdir data/tpmout_control  --idx_obj 1 --vmin 20 --vmax 400 --out obj1_flux_control.png
+python scripts/plot_flux_map.py --key_flux flux8 --resdir data/tpmout_control  --idx_obj 1 --vmin 20 --vmax 400 --out obj1_flux_control.pdf
 ## You can plot all at once with `--all` option (148 objects x 6 TI = 888 files)
 ```
 
 ```
 # Plot 8 aspect data vs. micron flux  (Figure 6.)
-python scripts/plot_flux_aspect.py --key_flux flux8 --resdir1 data/tpmout_original/ --resdir2 data/tpmout_control --out flux8_vs_aspect.jpg
+python scripts/plot_flux_aspect.py --key_flux flux8 --resdir1 data/tpmout_original/ --resdir2 data/tpmout_control --out flux8_vs_aspect.png
 ```
 
 ```
